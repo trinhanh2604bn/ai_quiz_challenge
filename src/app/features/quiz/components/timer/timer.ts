@@ -1,4 +1,5 @@
 import { Component, DestroyRef, computed, inject, output, signal } from '@angular/core';
+import { AudioService } from '../../services/audio.service';
 
 const COUNTDOWN_SECONDS = 15;
 
@@ -13,6 +14,7 @@ export class TimerComponent {
   readonly secondsLeft = signal(COUNTDOWN_SECONDS);
   readonly fillPercent = computed(() => (this.secondsLeft() / COUNTDOWN_SECONDS) * 100);
 
+  private readonly audio = inject(AudioService);
   private intervalId: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
@@ -40,6 +42,9 @@ export class TimerComponent {
     }
 
     this.secondsLeft.set(remaining);
+    if (remaining <= 5) {
+      this.audio.playWarningSound();
+    }
   }
 
   private clearCountdown(): void {

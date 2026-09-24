@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { AudioService } from '../../services/audio.service';
 import { QuizService } from '../../services/quiz.service';
 import { ProgressBarComponent } from '../progress-bar/progress-bar';
 import { QuestionCardComponent } from '../question-card/question-card';
@@ -14,6 +15,7 @@ import { TimerComponent } from '../timer/timer';
 })
 export class QuizPageComponent implements OnInit {
   private readonly quiz = inject(QuizService);
+  private readonly audio = inject(AudioService);
   private readonly router = inject(Router);
 
   readonly totalQuestions = this.quiz.totalQuestions;
@@ -44,7 +46,16 @@ export class QuizPageComponent implements OnInit {
   }
 
   onAnswerSelected(optionIndex: number): void {
+    const question = this.quiz.currentQuestion();
+    const answeredBefore = this.quiz.answeredCount();
     this.quiz.selectAnswer(optionIndex);
+    if (question && this.quiz.answeredCount() === answeredBefore + 1) {
+      if (optionIndex === question.correctIndex) {
+        this.audio.playCorrectSound();
+      } else {
+        this.audio.playWrongSound();
+      }
+    }
     this.quiz.nextQuestion();
     this.openResultIfCompleted();
   }
@@ -65,6 +76,7 @@ export class QuizPageComponent implements OnInit {
 
   private openResultIfCompleted(): void {
     if (this.quiz.isCompleted()) {
+      this.audio.playCompleteSound();
       void this.router.navigate(['/result']);
     }
   }
