@@ -1,0 +1,14 @@
+<div
+  class="timer"
+  [class.urgent]="secondsLeft() <= 5"
+  role="timer"
+  [attr.aria-label]="'Time remaining: ' + secondsLeft() + ' seconds'"
+>
+  <div class="timer-top">
+    <span>Time left</span>
+    <strong>{{ secondsLeft() }}s</strong>
+  </div>
+  <div class="meter" aria-hidden="true">
+    <div class="meter-fill" [style.width.%]="fillPercent()"></div>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+app-score-board,
+app-progress-bar {
+  display: block;
+}
+
+app-progress-bar {
+  margin-top: 0.75rem;
+}
+
+.round {
+  margin-top: 1rem;
+}
+
+.round-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.step {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}

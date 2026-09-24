@@ -1,0 +1,11 @@
+<article>
+  <h2>{{ question().text }}</h2>
+  <div class="options" role="group" aria-label="Answer options">
+    @for (option of question().options; track $index) {
+      <button type="button" class="option" (click)="selectOption($index)">
+        <span class="letter" aria-hidden="true">{{ optionLabel($index) }}</span>
+        <span class="text">{{ option }}</span>
+      </button>
+    }
+  </div>
+</article>

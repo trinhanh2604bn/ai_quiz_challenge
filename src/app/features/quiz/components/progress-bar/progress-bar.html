@@ -1,0 +1,16 @@
+<div class="progress">
+  <div class="meta">
+    <span>Progress</span>
+    <span>{{ progress() }}%</span>
+  </div>
+  <div
+    class="track"
+    role="progressbar"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    [attr.aria-valuenow]="progress()"
+    aria-label="Quiz progress"
+  >
+    <div class="fill" [style.width.%]="progress()"></div>
+  </div>
+</div>

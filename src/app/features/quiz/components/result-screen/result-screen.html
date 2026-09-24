@@ -1,0 +1,58 @@
+<section class="screen">
+  <header class="panel hero">
+    <p class="eyebrow">Session complete</p>
+    <h1>Quiz completed</h1>
+    @if (result(); as quizResult) {
+      <p class="score-hero">
+        <span class="score-value">{{ quizResult.score }}</span>
+        <span class="score-label">points</span>
+      </p>
+      <p class="summary">You answered {{ quizResult.totalQuestions }} questions.</p>
+    }
+  </header>
+
+  @if (result(); as quizResult) {
+    <app-progress-bar [progress]="progress()" />
+    <dl class="stat-grid">
+      <div>
+        <dt>Score</dt>
+        <dd>{{ quizResult.score }}</dd>
+      </div>
+      <div>
+        <dt>Correct answers</dt>
+        <dd>{{ quizResult.correctCount }} / {{ quizResult.totalQuestions }}</dd>
+      </div>
+      <div>
+        <dt>Accuracy</dt>
+        <dd>{{ quizResult.accuracy }}%</dd>
+      </div>
+      <div>
+        <dt>Best streak</dt>
+        <dd>{{ quizResult.maxStreak }}</dd>
+      </div>
+    </dl>
+    <form class="panel save-form" (submit)="saveScore($event)">
+      <label for="player-name">Name</label>
+      <div class="save-row">
+        <input
+          id="player-name"
+          type="text"
+          name="playerName"
+          autocomplete="nickname"
+          [value]="playerName()"
+          (input)="updateName($event)"
+          [disabled]="saved()"
+        />
+        <button type="submit" class="btn btn-primary" [disabled]="!canSave()">
+          Save to leaderboard
+        </button>
+      </div>
+    </form>
+    @if (saved()) {
+      <p class="saved" role="status">Score saved.</p>
+    }
+  }
+
+  <app-leaderboard [entries]="entries()" />
+  <a class="btn btn-secondary" routerLink="/">Back to start</a>
+</section>

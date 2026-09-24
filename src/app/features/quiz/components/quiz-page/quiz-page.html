@@ -1,0 +1,18 @@
+<section class="screen">
+  <app-score-board
+    [score]="score()"
+    [correctCount]="correctCount()"
+    [streak]="streak()"
+    [multiplier]="multiplier()"
+  />
+  <app-progress-bar [progress]="progress()" />
+  @for (question of visibleQuestions(); track question.id) {
+    <div class="round panel">
+      <div class="round-head">
+        <p class="step">Question {{ questionNumber() }} of {{ totalQuestions() }}</p>
+        <app-timer (timedOut)="onTimeout(question.id)" />
+      </div>
+      <app-question-card [question]="question" (answerSelected)="onAnswerSelected($event)" />
+    </div>
+  }
+</section>

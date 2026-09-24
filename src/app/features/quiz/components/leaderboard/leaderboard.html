@@ -1,0 +1,22 @@
+<section class="panel board" aria-label="Leaderboard">
+  <h2>Leaderboard</h2>
+  @if (entries().length === 0) {
+    <p class="empty">No scores yet. Finish a quiz and save your name to appear here.</p>
+  } @else {
+    <ol>
+      @for (entry of entries(); track $index) {
+        <li>
+          <span class="rank">{{ $index + 1 }}</span>
+          <span class="who">
+            <span class="name">{{ entry.playerName }}</span>
+            <span class="when">{{ formatCompletedAt(entry.completedAt) }}</span>
+          </span>
+          <span class="figures">
+            <span class="points">{{ entry.score }} pts</span>
+            <span class="acc">{{ entry.accuracy }}%</span>
+          </span>
+        </li>
+      }
+    </ol>
+  }
+</section>

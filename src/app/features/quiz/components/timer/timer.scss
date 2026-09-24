@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+.timer-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+strong {
+  color: var(--ink);
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.meter {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.meter-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 0.25s linear;
+}
+
+.urgent strong,
+.urgent .timer-top {
+  color: var(--danger);
+}
+
+.urgent .meter-fill {
+  background: var(--danger);
+}
+
+.urgent .meter {
+  background: var(--danger-soft);
+}

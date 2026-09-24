@@ -1,0 +1,17 @@
+<section class="screen">
+  <header class="panel hero">
+    <p class="eyebrow">Timed quiz</p>
+    <h1>AI Knowledge Challenge</h1>
+    <p class="lead">
+      Answer one question at a time. Each question has four choices and a 15-second timer. There
+      are {{ totalQuestions() }} questions.
+    </p>
+    <ul class="facts">
+      <li>Four answers</li>
+      <li>15 seconds</li>
+      <li>Streak bonus</li>
+    </ul>
+    <button type="button" class="btn btn-primary" (click)="startQuiz()">Start Quiz</button>
+  </header>
+  <app-leaderboard [entries]="entries()" />
+</section>

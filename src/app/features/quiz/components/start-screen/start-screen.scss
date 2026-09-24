@@ -1,0 +1,45 @@
+h1 {
+  margin: 0;
+  font-size: clamp(1.85rem, 5vw, 2.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.lead {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.facts li {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.hero .btn {
+  margin-top: 1.25rem;
+}
+
+app-leaderboard {
+  display: block;
+  margin-top: 1rem;
+}
+
+@media (min-width: 641px) {
+  .hero .btn {
+    width: auto;
+    min-width: 10rem;
+  }
+}
