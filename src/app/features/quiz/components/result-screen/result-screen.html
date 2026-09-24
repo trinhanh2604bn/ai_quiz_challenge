@@ -31,6 +31,9 @@
         <dd>{{ quizResult.maxStreak }}</dd>
       </div>
     </dl>
+    @if (report(); as performance) {
+      <app-performance-dashboard [report]="performance" />
+    }
     <form class="panel save-form" (submit)="saveScore($event)">
       <label for="player-name">Name</label>
       <div class="save-row">

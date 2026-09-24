@@ -1,3 +1,5 @@
+import { AnswerRecord } from './answer-record.model';
+
 export type QuizStatus = 'idle' | 'in-progress' | 'completed';
 
 export interface QuizState {
@@ -7,4 +9,5 @@ export interface QuizState {
   correctCount: number;
   answeredCount: number;
   streak: number;
+  answerHistory: readonly AnswerRecord[];
 }

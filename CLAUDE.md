@@ -11,16 +11,18 @@ AI Knowledge Challenge
 
 ## Purpose
 
-Build a modern Quiz Web Application using Angular 20 as an Agentic
-Coding assignment.
+A timed Angular 20 quiz about artificial intelligence, built as an
+Agentic Coding assignment.
 
-The application allows users to:
+A session works like this:
 
-- Answer AI-related questions
-- Complete timed quiz sessions
-- Track scores
-- View results
-- Experience gamification features
+- The player picks one category and one difficulty on the start screen.
+- The app draws 10 questions from that pair and shows them one at a time.
+- Each question has four answers and a 15-second countdown.
+- Correct answers score points, with a streak multiplier.
+- A short answer animation and optional tones play after each choice.
+- The result screen shows score, accuracy, a save-to-leaderboard form,
+  and a performance dashboard for that session.
 
 Claude Code should work as an engineering assistant:
 
@@ -45,89 +47,30 @@ The development process must demonstrate:
 - Code review
 - Testing workflow
 
-# Core Features
-
-## Quiz Flow
-
-Must support:
-
-- Start quiz
-- One question at a time
-- Four answer options
-- Answer selection
-- Automatic next question
-- Final result screen
-
-Implemented by `StartScreenComponent`, `QuizPageComponent`, and
-`QuestionCardComponent`, coordinated by `QuizService`.
-
-Routes:
-
-- `/` — start screen and previous best scores
-- `/quiz` — the active question
-- `/result` — final score, accuracy, and save form
-
-## Scoring
-
-Must:
-
-- Track points
-- Count correct answers
-- Calculate accuracy percentage
-- Display final score
-
-Base points are 10 per correct answer, multiplied by the current streak
-bonus. Incorrect answers and timeouts reset the streak and award no
-points. Accuracy is the rounded percentage of correct answers.
-
-## Timer
-
-Must:
-
-- Provide 15-second countdown per question
-- Display remaining time
-- Automatically skip after timeout
-
-# Gamification
-
-All three features below are implemented.
-
-## Progress Bar
-
-`ProgressBarComponent` shows quiz completion progress from
-`QuizService`.
-
-## Streak Bonus
-
-Rules, applied in `QuizService`:
-
-- 3 consecutive correct answers = 2x score
-- 5 consecutive correct answers = 3x score
-
-A wrong answer or a timeout resets the streak to zero.
-
-## Leaderboard
-
-- Store top scores using localStorage
-- Display previous best results
-- Keep the five highest scores (`LeaderboardService`)
-
 # Technology Stack
 
-Framework: Angular 20
+Framework: Angular 20 (`@angular/core` ^20.3)
 
-Language: TypeScript
+Language: TypeScript (strict)
 
 Styling: SCSS
 
 Architecture:
 
-- Standalone Components
-- Feature-based architecture
-- Angular Signals
-- Services
+- Standalone components
+- Feature-based layout under `src/app/features/quiz/`
+- Angular Signals for quiz, leaderboard, and analytics state
+- Root-provided services
 
-Storage: Browser LocalStorage
+Storage: Browser `localStorage` for the leaderboard only. Quiz progress,
+answer history, and the performance report live in memory for the
+current session.
+
+Audio: Web Audio API oscillators in `AudioService`. No audio files and
+no extra audio packages.
+
+Tests: Jasmine via `ng test`. Analytics report math is covered in
+`analytics.service.spec.ts`.
 
 # Current Project Structure
 
@@ -146,20 +89,306 @@ src/app/
       progress-bar/
       result-screen/
       leaderboard/
+      performance-dashboard/
     services/
       quiz.service.ts
       leaderboard.service.ts
+      audio.service.ts
+      analytics.service.ts
     models/
       question.model.ts
+      answer-record.model.ts
       quiz-state.model.ts
       quiz-result.model.ts
       leaderboard-entry.model.ts
+      performance-report.model.ts
     data/
       questions.data.ts
 ```
 
 Shared styles live in `src/styles.scss`. Components render state and
 emit user actions. Business rules stay in services.
+
+Routes in `src/app/app.routes.ts`:
+
+- `/` — start screen, category and difficulty selectors, leaderboard
+- `/quiz` — the active question
+- `/result` — score, accuracy, performance dashboard, and save form
+- unknown paths redirect to `/`
+
+`/quiz` returns home when no session is in progress, and goes to
+`/result` when the session is already completed. `/result` returns home
+when there is no completed result.
+
+# Feature Mapping
+
+## Quiz Flow
+
+Implemented by `StartScreenComponent`, `QuizPageComponent`, and
+`QuestionCardComponent`, coordinated by `QuizService`.
+
+- Start requires a category and a difficulty.
+- `QuizService.startQuiz()` shuffles matching questions and keeps 10
+  (`sessionQuestionCount`).
+- One question at a time, four options labeled A–D.
+- A selection locks the card, plays feedback, waits 800 ms, then calls
+  `nextQuestion()`.
+- The last answer or a timeout on the last question sets status to
+  `completed` and navigates to `/result`.
+
+## Scoring
+
+Owned by `QuizService`. Displayed by `ScoreBoardComponent` during the
+quiz and `ResultScreenComponent` at the end.
+
+- Base points are 10 per correct answer.
+- Points are multiplied by the streak bonus that applies after that
+  correct answer.
+- Incorrect answers and timeouts award no points and reset the streak.
+- Accuracy is the rounded percentage of correct answers.
+- The result also stores `maxStreak` and `completedAt`.
+
+## Timer
+
+`TimerComponent` runs a 15-second countdown and emits `timedOut`.
+
+- `QuizPageComponent` calls `QuizService.skipQuestion()` for that
+  question id.
+- A timeout records an answer-history row with `selectedAnswer: null`
+  and `isCorrect: false`.
+- The last five seconds play a warning tone.
+
+## Gamification
+
+### Progress Bar
+
+`ProgressBarComponent` shows completion from `QuizService.progress`
+(answered count over the session length, 100 when completed).
+
+### Streak Bonus
+
+Applied in `QuizService.multiplierFor()`:
+
+- 3 consecutive correct answers = 2x
+- 5 consecutive correct answers = 3x
+- Otherwise 1x
+
+A wrong answer or a timeout resets the streak to zero. `maxStreak`
+keeps the best run for the result screen.
+
+### Leaderboard
+
+`LeaderboardService` stores the top five scores in `localStorage` under
+`ai-quiz-leaderboard`, highest score first. Ties break by later
+`completedAt`. Blank names are ignored. Invalid stored JSON is treated
+as an empty board. `LeaderboardComponent` renders the list on the start
+and result screens.
+
+## Audio Feedback
+
+`AudioService` synthesizes short tones. Playback failures are ignored so
+a blocked or missing audio output cannot stop the quiz.
+
+| Event | Caller | Method |
+| --- | --- | --- |
+| Correct answer | `QuizPageComponent` | `playCorrectSound()` |
+| Incorrect answer | `QuizPageComponent` | `playWrongSound()` |
+| 5 seconds or fewer left | `TimerComponent` | `playWarningSound()` |
+| Quiz completed | `QuizPageComponent` | `playCompleteSound()` |
+
+Warning tones are rate-limited to about one every 900 ms.
+
+## Answer Feedback Animation
+
+`QuestionCardComponent` paints each option as `default`, `correct`,
+`incorrect`, or `reveal`.
+
+- The chosen correct option pulses and shows a check.
+- A wrong choice shakes and shows an X. The real answer is revealed
+  with a check.
+- Other options stay idle and disabled.
+- `QuizPageComponent` holds this state for 800 ms (`FEEDBACK_DELAY_MS`)
+  before advancing.
+- `prefers-reduced-motion: reduce` disables the animations.
+- A timeout skips the question without this selection animation.
+
+## Category System
+
+Categories, defined in `question.model.ts`:
+
+- AI Fundamentals
+- Machine Learning
+- Deep Learning
+- Generative AI
+- Prompt Engineering
+
+Every question has a `category`. The start screen requires one. The
+session filters `QUESTIONS` to that category and the chosen difficulty.
+The quiz header shows both labels.
+
+## Difficulty System
+
+Difficulties: Easy, Medium, and Hard.
+
+The start button stays disabled until both selectors have a value and
+`QuizService.hasEnoughQuestions()` is true (at least 10 matches). If a
+pair is too small, the start screen says there are not enough questions.
+The current dataset has 10 questions for every category and difficulty
+pair, so every pair can start.
+
+## Analytics Dashboard
+
+`QuizService` appends an `AnswerRecord` on every answer and timeout,
+including response time measured from `markQuestionDisplayed()`.
+
+`AnalyticsService.report` builds a `PerformanceReport` from that history
+once a result exists. `PerformanceDashboardComponent` renders it on the
+result screen:
+
+- Final score and accuracy
+- Correct count out of the session total
+- Average response time
+- Best streak
+- Accuracy by category (groups with no attempts are omitted)
+- Accuracy by difficulty (Easy, Medium, and Hard are always listed;
+  unattempted levels show "Not attempted")
+
+A normal session uses one category and one difficulty, so category
+performance is a single group and the other difficulties are unattempted.
+The report is in-memory only. A refresh clears it. The leaderboard is
+the stored record.
+
+## Dataset
+
+`src/app/features/quiz/data/questions.data.ts` holds 150 questions:
+5 categories × 3 difficulties × 10 questions. Question ids follow
+`{prefix}-{difficulty}-{n}` (for example `af-easy-1`).
+
+# Data Models
+
+## Question
+
+`src/app/features/quiz/models/question.model.ts`
+
+```ts
+interface Question {
+  id: string;
+  text: string;
+  options: [string, string, string, string];
+  correctIndex: 0 | 1 | 2 | 3;
+  category: QuestionCategory;
+  difficulty: Difficulty;
+}
+```
+
+`QuestionCategory` and `Difficulty` are the unions exported from
+`QUESTION_CATEGORIES` and `DIFFICULTY_LEVELS`.
+
+## Answer history
+
+`src/app/features/quiz/models/answer-record.model.ts`
+
+```ts
+interface AnswerRecord {
+  questionId: string;
+  category: QuestionCategory;
+  difficulty: Difficulty;
+  selectedAnswer: number | null;
+  correctAnswer: 0 | 1 | 2 | 3;
+  isCorrect: boolean;
+  responseTime: number;
+}
+```
+
+`QuizService.answerHistory` is a readonly signal of these records, in
+answer order. `selectedAnswer` is `null` on timeout. `responseTime` is
+milliseconds from when the question was shown, or `0` if that timestamp
+was never set. `QuizState.answerHistory` uses the same type.
+
+## Related models
+
+- `QuizState` — status (`idle` | `in-progress` | `completed`), index,
+  score, counts, streak, and answer history.
+- `QuizResult` — score, correct count, total questions, accuracy,
+  max streak, and `completedAt`.
+- `LeaderboardEntry` — player name, score, accuracy, and `completedAt`.
+- `PerformanceReport` / `PerformanceGroup` — dashboard totals plus
+  per-category and per-difficulty accuracy.
+
+# Component and Service Responsibilities
+
+## StartScreenComponent
+
+- Introduces the quiz
+- Collects category and difficulty
+- Starts a session only when 10 matching questions exist
+- Shows previous best scores
+
+## QuizPageComponent
+
+- Hosts the active question
+- Coordinates timer, score, progress, audio, and the question card
+- Waits through answer feedback, then advances
+- Moves to `/result` when the quiz completes
+
+## QuestionCardComponent
+
+- Displays the question and four answers
+- Emits the selected index
+- Shows correct, incorrect, and reveal states
+
+## ScoreBoardComponent
+
+- Current score
+- Correct-answer count
+- Streak and multiplier
+
+## ProgressBarComponent
+
+- Quiz completion progress
+
+## TimerComponent
+
+- 15-second countdown display
+- Warning tone in the last five seconds
+- Timeout event
+
+## ResultScreenComponent
+
+- Final score, accuracy, correct count, and best streak
+- Hosts the performance dashboard
+- Saves a named result to the leaderboard
+
+## PerformanceDashboardComponent
+
+- Renders a `PerformanceReport`
+- Formats response time and group accuracy
+
+## LeaderboardComponent
+
+- Displays stored top scores
+
+## QuizService
+
+- Question selection for the chosen category and difficulty
+- Progress, score, streak, and max streak
+- Answer history and response time
+- Result calculation
+
+## AudioService
+
+- Optional correct, wrong, warning, and completion tones
+
+## AnalyticsService
+
+- Derives the session performance report from answer history
+- `buildPerformanceReport()` is the pure function used by the service
+  and by unit tests
+
+## LeaderboardService
+
+- Reads and writes top scores in `localStorage`
+- Keeps at most five entries, highest score first
 
 # Development Commands
 
@@ -196,9 +425,8 @@ errors while exercising the quiz.
 
 # Agent Workflow
 
-Claude Code must follow this sequence for every feature. Do not skip a
-step, and do not start the next feature until the current one has been
-verified.
+Follow this sequence for every feature. Do not skip a step, and do not
+start the next feature until the current one has been verified.
 
 ```
 Analyze requirement
@@ -221,9 +449,13 @@ Improve
 5. Review changes — check component boundaries and business rules.
 6. Improve — adjust only what the review found.
 
-Claude Code should not implement future phases before verification.
-Finish, test, and review the current feature before planning or coding
-the next one. Do not implement multiple major features in one step.
+Do not implement future phases before verification. Finish, test, and
+review the current feature before planning or coding the next one. Do
+not implement multiple major features in one step.
+
+The shipped enhancements (audio, answer animation, category and
+difficulty, the 150-question set, and the analytics dashboard) are
+already in the tree. Treat them as existing behavior to preserve.
 
 # Feature Development Protocol
 
@@ -297,85 +529,6 @@ When editing:
 - Avoid unrelated refactoring
 - Preserve existing functionality
 
-# Component Responsibilities
-
-## StartScreenComponent
-
-Responsible for:
-
-- Introducing the quiz
-- Starting a session
-- Showing previous best scores
-
-## QuizPageComponent
-
-Responsible for:
-
-- Hosting the active question
-- Coordinating timer, score, progress, and the question card
-- Moving to the result route when the quiz completes
-
-## QuestionCardComponent
-
-Responsible for:
-
-- Displaying questions
-- Displaying answers
-- Emitting selected answer
-
-## ScoreBoardComponent
-
-Responsible for:
-
-- Displaying the current score
-- Displaying the correct-answer count
-- Displaying the streak multiplier
-
-## ProgressBarComponent
-
-Responsible for:
-
-- Displaying quiz completion progress
-
-## QuizService
-
-Responsible for:
-
-- Questions
-- Quiz progress
-- Score calculation
-- Streak multiplier
-- State management
-
-## TimerComponent
-
-Responsible for:
-
-- Countdown display
-- Timeout events
-
-## ResultScreenComponent
-
-Responsible for:
-
-- Final score
-- Accuracy
-- Summary
-- Saving a result to the leaderboard
-
-## LeaderboardComponent
-
-Responsible for:
-
-- Displaying stored top scores
-
-## LeaderboardService
-
-Responsible for:
-
-- Reading and writing top scores in localStorage
-- Keeping at most five entries, highest score first
-
 # Testing Requirements
 
 Every feature implementation must include:
@@ -394,21 +547,28 @@ ng build
 ```
 
 Also run `ng test` when the change affects logic covered by unit tests.
-The production build must succeed before the feature is considered done.
+`analytics.service.spec.ts` covers report accuracy, response-time
+averages (including timeouts), streaks, and category and difficulty
+breakdowns. The production build must succeed before the feature is
+considered done.
 
 ## Functional testing
 
 Start the app with `ng serve` (or `npm start`) and walk the affected
 flow:
 
-Start Quiz -> Answer questions -> Timer countdown -> Score update ->
-Finish quiz -> View results
+Choose category and difficulty -> Start Quiz -> Answer questions ->
+See answer animation and hear feedback -> Timer countdown -> Score
+update -> Finish quiz -> View results and the performance dashboard ->
+Save a name
 
 Verify:
 
 - App starts successfully
 - No console errors
 - UI works correctly
+- The dashboard matches the session (score, accuracy, response time,
+  streak, category, difficulty)
 
 ## Edge case testing
 
@@ -418,18 +578,57 @@ Repeat these cases when the change can affect them:
 - Last question completion
 - Empty leaderboard
 - Multiple attempts
-- Browser refresh
+- Browser refresh (leaderboard remains; in-memory quiz state does not)
+- Start with no category or difficulty selected
+- A category and difficulty pair with fewer than 10 questions
+- Reduced-motion preference (answer animations off, quiz still advances)
+- Audio unavailable (quiz still completes)
 
 ## Regression testing
 
 After a feature lands, re-check behavior that already worked:
 
-- Starting a quiz still reaches the first question
-- Answering still updates score, streak, and progress
+- Starting a quiz still reaches the first question of the chosen pair
+- Answering still updates score, streak, progress, and answer history
+- Feedback still shows for about 800 ms, then advances
 - Timeout still skips the question and resets the streak
-- The result screen still shows score, correct count, and accuracy
+- The result screen still shows score, correct count, accuracy, and
+  the performance dashboard
 - Saving a name still updates the leaderboard
 - A refresh still keeps stored leaderboard entries
+
+# Enhancement History
+
+These landed after the base quiz, timer, scoring, and leaderboard.
+Each one preserved the previous flow.
+
+## Audio Feedback
+
+`AudioService` added Web Audio tones for correct answers, wrong answers,
+the last five seconds of the timer, and quiz completion. No new
+dependency.
+
+## Answer Animation
+
+`QuestionCardComponent` highlights the chosen answer and reveals the
+correct option. `QuizPageComponent` delays the next question by 800 ms
+so the animation can be seen. Reduced motion skips the motion.
+
+## Category & Difficulty
+
+Questions gained `category` and `difficulty`. The start screen requires
+both before a 10-question filtered session can begin.
+
+## Dataset Expansion
+
+The question file grew to 150 items, 10 for each of the 15 category and
+difficulty pairs, so every selector combination can start.
+
+## Analytics Dashboard
+
+Each attempt is stored as an `AnswerRecord`. `AnalyticsService` turns
+that history into a `PerformanceReport`, and
+`PerformanceDashboardComponent` shows it on the result screen.
 
 # Evaluation Criteria
 
@@ -485,11 +684,12 @@ Check:
 
 ## Creativity (5 points)
 
-Optional:
+Implemented:
 
-- Animation
-- Sound effects
-- Custom theme
+- Answer feedback animation
+- Sound effects via the Web Audio API
+- Category and difficulty selection
+- Session analytics dashboard
 
 # Assignment Requirement Mapping
 
@@ -541,6 +741,52 @@ Files:
 - `src/app/features/quiz/services/leaderboard.service.ts`
 - `src/app/features/quiz/components/leaderboard/`
 
+## Audio Feedback
+
+- AudioService
+- Called from QuizPageComponent and TimerComponent
+
+File:
+
+- `src/app/features/quiz/services/audio.service.ts`
+
+## Answer Feedback Animation
+
+- QuestionCardComponent option states
+- 800 ms delay in QuizPageComponent
+
+Files:
+
+- `src/app/features/quiz/components/question-card/`
+- `src/app/features/quiz/components/quiz-page/quiz-page.ts`
+
+## Category and Difficulty
+
+- Question category and difficulty fields
+- Start-screen selectors
+- Filtered session in QuizService
+
+Files:
+
+- `src/app/features/quiz/models/question.model.ts`
+- `src/app/features/quiz/data/questions.data.ts`
+- `src/app/features/quiz/components/start-screen/`
+- `src/app/features/quiz/services/quiz.service.ts`
+
+## Analytics Dashboard
+
+- AnswerRecord history
+- AnalyticsService
+- PerformanceDashboardComponent on the result screen
+
+Files:
+
+- `src/app/features/quiz/models/answer-record.model.ts`
+- `src/app/features/quiz/models/performance-report.model.ts`
+- `src/app/features/quiz/services/analytics.service.ts`
+- `src/app/features/quiz/components/performance-dashboard/`
+- `src/app/features/quiz/components/result-screen/`
+
 ## Code Quality
 
 - Angular 20
@@ -549,9 +795,10 @@ Files:
 - Service-based architecture
 
 UI components stay presentational. `QuizService` owns quiz state,
-scoring, and streak rules. `LeaderboardService` owns localStorage.
-Both services are provided in the root injector and expose readonly
-signals.
+scoring, streak rules, and answer history. `LeaderboardService` owns
+localStorage. `AudioService` owns tones. `AnalyticsService` owns the
+derived performance report. Services are provided in the root injector
+and expose readonly signals.
 
 # Git Rules
 
@@ -582,13 +829,15 @@ Claude Code must never:
 
 Functionality:
 
-- [ ] Quiz starts correctly
-- [ ] Questions display correctly
-- [ ] Answers work
-- [ ] Timer works
-- [ ] Score works
-- [ ] Results work
-- [ ] Gamification works
+- [ ] Quiz starts only after category and difficulty are chosen
+- [ ] A session has 10 questions from that pair
+- [ ] Questions display correctly with four answers
+- [ ] Answer animation shows, then the next question loads
+- [ ] Timer counts down from 15 and skips on timeout
+- [ ] Score and streak update, including 2x and 3x
+- [ ] Results show score, correct count, accuracy, and best streak
+- [ ] Performance dashboard matches the session
+- [ ] Leaderboard saves and survives refresh
 
 Technical:
 
@@ -597,6 +846,7 @@ Technical:
 - [ ] Services contain logic
 - [ ] Responsive UI
 - [ ] No console errors
+- [ ] `ng build` succeeds
 
 Repository:
 
@@ -608,9 +858,17 @@ Repository:
 # Final Submission Checklist
 
 - [ ] Angular 20 application
-- [ ] CLAUDE.md included
+- [ ] CLAUDE.md included and aligned with the final app
 - [ ] README included
 - [ ] Git repository ready
-- [ ] ng build succeeds
-- [ ] Full user flow tested
+- [ ] `ng build` succeeds
+- [ ] Full user flow tested, including category, difficulty, feedback,
+      results, dashboard, and leaderboard
 - [ ] No console errors
+- [ ] Quiz flow, scoring, timer, and gamification still work
+- [ ] Audio feedback works, and the quiz still finishes if audio fails
+- [ ] Answer feedback animation works, including reduced motion
+- [ ] Category and difficulty selection filters the 10-question session
+- [ ] Dataset has 150 questions, 10 per category and difficulty pair
+- [ ] Analytics dashboard shows score, accuracy, response time, streak,
+      and category and difficulty breakdowns

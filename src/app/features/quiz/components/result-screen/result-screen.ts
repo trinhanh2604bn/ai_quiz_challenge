@@ -1,22 +1,26 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { AnalyticsService } from '../../services/analytics.service';
 import { LeaderboardService } from '../../services/leaderboard.service';
 import { QuizService } from '../../services/quiz.service';
 import { LeaderboardComponent } from '../leaderboard/leaderboard';
+import { PerformanceDashboardComponent } from '../performance-dashboard/performance-dashboard';
 import { ProgressBarComponent } from '../progress-bar/progress-bar';
 
 @Component({
   selector: 'app-result-screen',
-  imports: [LeaderboardComponent, ProgressBarComponent, RouterLink],
+  imports: [LeaderboardComponent, PerformanceDashboardComponent, ProgressBarComponent, RouterLink],
   templateUrl: './result-screen.html',
   styleUrl: './result-screen.scss',
 })
 export class ResultScreenComponent implements OnInit {
   private readonly quiz = inject(QuizService);
+  private readonly analytics = inject(AnalyticsService);
   private readonly leaderboard = inject(LeaderboardService);
   private readonly router = inject(Router);
 
   readonly result = this.quiz.result;
+  readonly report = this.analytics.report;
   readonly progress = this.quiz.progress;
   readonly entries = this.leaderboard.entries;
   readonly playerName = signal('');

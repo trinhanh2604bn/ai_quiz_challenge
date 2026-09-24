@@ -3,15 +3,62 @@
     <p class="eyebrow">Timed quiz</p>
     <h1>AI Knowledge Challenge</h1>
     <p class="lead">
-      Answer one question at a time. Each question has four choices and a 15-second timer. There
-      are {{ totalQuestions() }} questions.
+      Choose a category and a difficulty. Answer one question at a time. Each question has four
+      choices and a 15-second timer.
     </p>
     <ul class="facts">
       <li>Four answers</li>
       <li>15 seconds</li>
       <li>Streak bonus</li>
     </ul>
-    <button type="button" class="btn btn-primary" (click)="startQuiz()">Start Quiz</button>
+
+    <div class="selectors">
+      <fieldset class="selector">
+        <legend>Category</legend>
+        <div class="choices">
+          @for (item of categories; track item) {
+            <button
+              type="button"
+              class="choice"
+              [class.is-selected]="category() === item"
+              [attr.aria-pressed]="category() === item"
+              (click)="selectCategory(item)"
+            >
+              {{ item }}
+            </button>
+          }
+        </div>
+      </fieldset>
+
+      <fieldset class="selector">
+        <legend>Difficulty</legend>
+        <div class="choices">
+          @for (item of difficulties; track item) {
+            <button
+              type="button"
+              class="choice"
+              [class.is-selected]="difficulty() === item"
+              [attr.aria-pressed]="difficulty() === item"
+              (click)="selectDifficulty(item)"
+            >
+              {{ item }}
+            </button>
+          }
+        </div>
+      </fieldset>
+    </div>
+
+    @if (notEnoughQuestions()) {
+      <p class="notice" role="status">Not enough questions available for this challenge.</p>
+    } @else if (category() === null || difficulty() === null) {
+      <p class="hint">Select a category and a difficulty to start.</p>
+    } @else {
+      <p class="hint">This round has {{ sessionQuestionCount }} questions.</p>
+    }
+
+    <button type="button" class="btn btn-primary" [disabled]="!canStart()" (click)="startQuiz()">
+      Start Quiz
+    </button>
   </header>
   <app-leaderboard [entries]="entries()" />
 </section>

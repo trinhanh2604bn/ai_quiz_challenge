@@ -9,10 +9,24 @@
   @for (question of visibleQuestions(); track question.id) {
     <div class="round panel">
       <div class="round-head">
+        @if (category() && difficulty()) {
+          <p class="session">{{ category() }} · {{ difficulty() }}</p>
+        }
         <p class="step">Question {{ questionNumber() }} of {{ totalQuestions() }}</p>
         <app-timer (timedOut)="onTimeout(question.id)" />
       </div>
-      <app-question-card [question]="question" (answerSelected)="onAnswerSelected($event)" />
+      <app-question-card
+        [question]="question"
+        [selectedIndex]="selectedOption()"
+        (answerSelected)="onAnswerSelected($event)"
+      />
+    </div>
+  }
+
+  @if (showEmptySelection()) {
+    <div class="panel empty-state">
+      <p>No questions available for this selection.</p>
+      <a class="btn btn-secondary" routerLink="/">Choose again</a>
     </div>
   }
 </section>

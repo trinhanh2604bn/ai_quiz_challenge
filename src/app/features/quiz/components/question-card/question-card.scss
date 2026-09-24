@@ -22,21 +22,66 @@ h2 {
   gap: 0.75rem;
   width: 100%;
   min-height: 48px;
-  padding: 0.75rem 0.85rem;
+  padding: 0.75rem 2.5rem 0.75rem 0.85rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: #f8fafc;
   text-align: left;
   cursor: pointer;
+  position: relative;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
-.option:hover {
+.option:hover:not(:disabled) {
   border-color: #c7d2fe;
   background: var(--accent-soft);
 }
 
-.option:active {
+.option:active:not(:disabled) {
   background: #e0e7ff;
+}
+
+.option:disabled {
+  cursor: default;
+  color: inherit;
+  opacity: 1;
+}
+
+.option:disabled:not(.correct):not(.incorrect):not(.reveal) {
+  opacity: 0.72;
+}
+
+.option.correct,
+.option.reveal {
+  border-color: #15803d;
+  background: #f0fdf4;
+}
+
+.option.correct {
+  animation: answer-correct 0.4s ease;
+}
+
+.option.reveal {
+  animation: answer-reveal 0.45s ease;
+}
+
+.option.incorrect {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  animation: answer-shake 0.42s ease;
+}
+
+.option.correct .letter,
+.option.reveal .letter {
+  background: #15803d;
+  color: #fff;
+}
+
+.option.incorrect .letter {
+  background: var(--danger);
+  color: #fff;
 }
 
 .letter {
@@ -54,4 +99,103 @@ h2 {
 
 .text {
   overflow-wrap: anywhere;
+}
+
+.indicator {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.option.correct .indicator::before,
+.option.reveal .indicator::before {
+  content: '✓';
+  color: #15803d;
+  animation: indicator-pop 0.35s ease;
+}
+
+.option.incorrect .indicator::before {
+  content: '✕';
+  color: var(--danger);
+}
+
+@keyframes answer-correct {
+  0% {
+    transform: scale(0.98);
+  }
+
+  55% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes answer-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-5px);
+  }
+
+  40% {
+    transform: translateX(5px);
+  }
+
+  60% {
+    transform: translateX(-3px);
+  }
+
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes answer-reveal {
+  0% {
+    background-color: #f8fafc;
+    box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.45);
+  }
+
+  100% {
+    background-color: #f0fdf4;
+    box-shadow: 0 0 0 6px rgba(21, 128, 61, 0);
+  }
+}
+
+@keyframes indicator-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option,
+  .option.correct,
+  .option.incorrect,
+  .option.reveal,
+  .option.correct .indicator::before,
+  .option.reveal .indicator::before {
+    animation: none;
+    transition: none;
+  }
 }

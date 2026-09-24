@@ -1,16 +1,20 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { QUESTIONS } from '../data/questions.data';
-import { Question } from '../models/question.model';
+import { AnswerRecord } from '../models/answer-record.model';
+import { Difficulty, Question, QuestionCategory } from '../models/question.model';
 import { QuizResult } from '../models/quiz-result.model';
 import { QuizStatus } from '../models/quiz-state.model';
 
 const POINTS_PER_CORRECT_ANSWER = 10;
+const SESSION_QUESTION_COUNT = 10;
 
 @Injectable({
   providedIn: 'root',
 })
 export class QuizService {
-  private readonly questions = signal<readonly Question[]>(QUESTIONS);
+  private readonly questions = signal<readonly Question[]>([]);
+  private readonly categoryState = signal<QuestionCategory | null>(null);
+  private readonly difficultyState = signal<Difficulty | null>(null);
   private readonly status = signal<QuizStatus>('idle');
   private readonly currentIndex = signal(0);
   private readonly selectedAnswers = signal<readonly (number | null)[]>([]);
@@ -19,9 +23,14 @@ export class QuizService {
   private readonly streakState = signal(0);
   private readonly maxStreakState = signal(0);
   private readonly resultState = signal<QuizResult | null>(null);
+  private readonly answerHistoryState = signal<readonly AnswerRecord[]>([]);
+  private displayedQuestionId: string | null = null;
+  private questionShownAt = 0;
   private transitionLocked = false;
 
   readonly quizStatus = this.status.asReadonly();
+  readonly category = this.categoryState.asReadonly();
+  readonly difficulty = this.difficultyState.asReadonly();
   readonly index = this.currentIndex.asReadonly();
   readonly totalQuestions = computed(() => this.questions().length);
   readonly currentQuestion = computed(() => this.questions()[this.currentIndex()] ?? null);
@@ -35,9 +44,24 @@ export class QuizService {
   readonly multiplier = computed(() => this.multiplierFor(this.streakState()));
   readonly progress = computed(() => this.calculateProgress());
   readonly result = this.resultState.asReadonly();
+  readonly answerHistory = this.answerHistoryState.asReadonly();
+  readonly sessionQuestionCount = SESSION_QUESTION_COUNT;
 
-  startQuiz(): void {
-    this.questions.set(QUESTIONS);
+  hasEnoughQuestions(category: QuestionCategory, difficulty: Difficulty): boolean {
+    return this.matchingQuestions(category, difficulty).length >= SESSION_QUESTION_COUNT;
+  }
+
+  startQuiz(category: QuestionCategory, difficulty: Difficulty): boolean {
+    const matching = this.matchingQuestions(category, difficulty);
+    if (matching.length < SESSION_QUESTION_COUNT) {
+      return false;
+    }
+
+    const selected = this.shuffle(matching).slice(0, SESSION_QUESTION_COUNT);
+
+    this.categoryState.set(category);
+    this.difficultyState.set(difficulty);
+    this.questions.set(selected);
     this.currentIndex.set(0);
     this.selectedAnswers.set([]);
     this.scoreState.set(0);
@@ -45,8 +69,12 @@ export class QuizService {
     this.streakState.set(0);
     this.maxStreakState.set(0);
     this.resultState.set(null);
+    this.answerHistoryState.set([]);
+    this.displayedQuestionId = null;
+    this.questionShownAt = 0;
     this.transitionLocked = false;
     this.status.set('in-progress');
+    return true;
   }
 
   selectAnswer(optionIndex: number): void {
@@ -79,6 +107,21 @@ export class QuizService {
     }
 
     this.selectedAnswers.update((answers) => [...answers, optionIndex]);
+    this.recordAttempt(question, optionIndex, optionIndex === question.correctIndex);
+  }
+
+  markQuestionDisplayed(questionId: string): void {
+    if (this.status() !== 'in-progress' || this.displayedQuestionId === questionId) {
+      return;
+    }
+
+    const question = this.questions()[this.currentIndex()];
+    if (!question || question.id !== questionId) {
+      return;
+    }
+
+    this.displayedQuestionId = questionId;
+    this.questionShownAt = Date.now();
   }
 
   nextQuestion(): void {
@@ -106,6 +149,10 @@ export class QuizService {
     this.lockTransition();
     this.streakState.set(0);
     this.selectedAnswers.update((answers) => [...answers, null]);
+    const question = this.questions()[this.currentIndex()];
+    if (question) {
+      this.recordAttempt(question, null, false);
+    }
     this.moveToNextQuestion();
   }
 
@@ -141,6 +188,28 @@ export class QuizService {
     };
   }
 
+  private recordAttempt(
+    question: Question,
+    selectedAnswer: number | null,
+    isCorrect: boolean,
+  ): void {
+    const responseTime =
+      this.questionShownAt === 0 ? 0 : Math.max(0, Math.round(Date.now() - this.questionShownAt));
+
+    this.answerHistoryState.update((history) => [
+      ...history,
+      {
+        questionId: question.id,
+        category: question.category,
+        difficulty: question.difficulty,
+        selectedAnswer,
+        correctAnswer: question.correctIndex,
+        isCorrect,
+        responseTime,
+      },
+    ]);
+  }
+
   private calculateProgress(): number {
     const totalQuestions = this.questions().length;
     if (totalQuestions === 0) {
@@ -164,6 +233,27 @@ export class QuizService {
     }
 
     return 1;
+  }
+
+  private matchingQuestions(category: QuestionCategory, difficulty: Difficulty): Question[] {
+    return QUESTIONS.filter(
+      (question) => question.category === category && question.difficulty === difficulty,
+    );
+  }
+
+  private shuffle(questions: readonly Question[]): Question[] {
+    const copy = [...questions];
+    for (let index = copy.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      const current = copy[index];
+      const swap = copy[swapIndex];
+      if (current !== undefined && swap !== undefined) {
+        copy[index] = swap;
+        copy[swapIndex] = current;
+      }
+    }
+
+    return copy;
   }
 
   private calculateAccuracy(correctCount: number, totalQuestions: number): number {
