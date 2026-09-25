@@ -1,0 +1,58 @@
+@mixin rise($name) {
+  @keyframes #{$name} {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+@mixin float-y($name) {
+  @keyframes #{$name} {
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+}
+
+@mixin celebration {
+  @include rise(result-enter);
+  @include float-y(result-float);
+
+  @keyframes sparkle-pulse {
+    50% {
+      opacity: 0.4;
+      transform: scale(0.84);
+    }
+  }
+
+  @keyframes trophy-glow {
+    50% {
+      transform: translateY(-4px) scale(1.04);
+    }
+  }
+}
+
+@mixin vs-pop {
+  @keyframes vs-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+@mixin arena {
+  @include rise(arena-enter);
+  @include float-y(arena-float);
+}

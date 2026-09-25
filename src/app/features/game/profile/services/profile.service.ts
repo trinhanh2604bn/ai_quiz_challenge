@@ -1,6 +1,10 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { StorageService } from '../../../../core/storage/storage.service';
-import { QUESTION_CATEGORIES, QuestionCategory } from '../../../quiz/models/question.model';
+import {
+  QUESTION_CATEGORIES,
+  QuestionCategory,
+  isQuestionCategory,
+} from '../../../quiz/models/question.model';
 import { BattleSession } from '../../models/battle-session.model';
 import { avatarById } from '../data/avatars.data';
 import {
@@ -70,18 +74,23 @@ export class ProfileService {
 
     const questions = wholeNumber(facts.totalQuestions);
     const correct = Math.min(wholeNumber(facts.correctCount), questions);
-    return this.apply(profile, quizExperience(questions, correct), applySession(profile.statistics, {
-      kind: 'solo',
-      category: isCategory(facts.category) ? facts.category : null,
-      score: facts.score,
-      maxStreak: facts.maxStreak,
-      questions,
-      correct,
-      won: false,
-      lost: false,
-    }), {
-      seenQuizIds: [...profile.seenQuizIds, facts.completedAt],
-    });
+    return this.apply(
+      profile,
+      quizExperience(questions, correct),
+      applySession(profile.statistics, {
+        kind: 'solo',
+        category: isQuestionCategory(facts.category) ? facts.category : null,
+        score: facts.score,
+        maxStreak: facts.maxStreak,
+        questions,
+        correct,
+        won: false,
+        lost: false,
+      }),
+      {
+        seenQuizIds: [...profile.seenQuizIds, facts.completedAt],
+      },
+    );
   }
 
   recordBattleCompletion(facts: BattleProgressFacts): ProfileUpdate | null {
@@ -95,18 +104,23 @@ export class ProfileService {
     const correct = Math.min(wholeNumber(facts.correctCount), questions);
     const won = facts.won;
     const lost = !won && facts.lost;
-    return this.apply(profile, battleExperience(correct, won), applySession(profile.statistics, {
-      kind: 'battle',
-      category: isCategory(facts.category) ? facts.category : null,
-      score: facts.score,
-      maxStreak: facts.maxStreak,
-      questions,
-      correct,
-      won,
-      lost,
-    }), {
-      seenBattleIds: [...profile.seenBattleIds, signature],
-    });
+    return this.apply(
+      profile,
+      battleExperience(correct, won),
+      applySession(profile.statistics, {
+        kind: 'battle',
+        category: isQuestionCategory(facts.category) ? facts.category : null,
+        score: facts.score,
+        maxStreak: facts.maxStreak,
+        questions,
+        correct,
+        won,
+        lost,
+      }),
+      {
+        seenBattleIds: [...profile.seenBattleIds, signature],
+      },
+    );
   }
 
   recordAchievementUnlocks(ids: readonly string[]): ProfileUpdate | null {
@@ -126,12 +140,9 @@ export class ProfileService {
       return null;
     }
 
-    return this.apply(
-      profile,
-      fresh.length * XP_AWARDS.achievementUnlocked,
-      profile.statistics,
-      { seenAchievementIds: [...profile.seenAchievementIds, ...fresh] },
-    );
+    return this.apply(profile, fresh.length * XP_AWARDS.achievementUnlocked, profile.statistics, {
+      seenAchievementIds: [...profile.seenAchievementIds, ...fresh],
+    });
   }
 
   private apply(
@@ -178,7 +189,10 @@ export class ProfileService {
   }
 }
 
-export function battleProgressFacts(session: BattleSession, signature: string): BattleProgressFacts {
+export function battleProgressFacts(
+  session: BattleSession,
+  signature: string,
+): BattleProgressFacts {
   const [localPlayer, opponent] = session.players;
   return {
     signature,
@@ -229,7 +243,10 @@ function addCategory(stats: PlayerStatistics, category: QuestionCategory | null)
     return stats;
   }
 
-  const categoryCounts = { ...stats.categoryCounts, [category]: (stats.categoryCounts[category] ?? 0) + 1 };
+  const categoryCounts = {
+    ...stats.categoryCounts,
+    [category]: (stats.categoryCounts[category] ?? 0) + 1,
+  };
   const currentCount = stats.favoriteCategory ? (categoryCounts[stats.favoriteCategory] ?? 0) : -1;
   const favoriteCategory =
     categoryCounts[category] > currentCount ? category : (stats.favoriteCategory ?? category);
@@ -325,7 +342,7 @@ function favoriteCategory(
   value: unknown,
   counts: Readonly<Record<string, number>>,
 ): QuestionCategory | null {
-  if (isCategory(value)) {
+  if (isQuestionCategory(value)) {
     return value;
   }
 
@@ -349,16 +366,12 @@ function categoryCountMap(value: unknown): Record<string, number> {
 
   const counts: Record<string, number> = {};
   for (const [key, countValue] of Object.entries(value)) {
-    if (isCategory(key)) {
+    if (isQuestionCategory(key)) {
       counts[key] = count(countValue);
     }
   }
 
   return counts;
-}
-
-function isCategory(value: unknown): value is QuestionCategory {
-  return QUESTION_CATEGORIES.some((category) => category === value);
 }
 
 function count(value: unknown): number {

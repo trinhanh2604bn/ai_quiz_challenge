@@ -13,10 +13,14 @@ export const DIFFICULTY_LEVELS = ['Easy', 'Medium', 'Hard'] as const;
 export type Difficulty = (typeof DIFFICULTY_LEVELS)[number];
 
 export interface Question {
-  id: string;
-  text: string;
-  options: [string, string, string, string];
-  correctIndex: 0 | 1 | 2 | 3;
-  category: QuestionCategory;
-  difficulty: Difficulty;
+  readonly id: string;
+  readonly text: string;
+  readonly options: readonly [string, string, string, string];
+  readonly correctIndex: 0 | 1 | 2 | 3;
+  readonly category: QuestionCategory;
+  readonly difficulty: Difficulty;
+}
+
+export function isQuestionCategory(value: unknown): value is QuestionCategory {
+  return QUESTION_CATEGORIES.some((category) => category === value);
 }

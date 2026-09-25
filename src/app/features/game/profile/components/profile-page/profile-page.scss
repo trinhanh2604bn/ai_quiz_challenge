@@ -24,12 +24,7 @@
 }
 
 .kicker {
-  margin: 0 0 0.15rem;
-  color: #7c3aed;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  @include hub.kicker;
 }
 
 h1 {
@@ -141,10 +136,18 @@ app-xp-bar {
     box-shadow 180ms ease;
 }
 
-.stat:nth-child(2) { animation-delay: 40ms; }
-.stat:nth-child(3) { animation-delay: 80ms; }
-.stat:nth-child(4) { animation-delay: 120ms; }
-.stat:nth-child(5) { animation-delay: 160ms; }
+.stat:nth-child(2) {
+  animation-delay: 40ms;
+}
+.stat:nth-child(3) {
+  animation-delay: 80ms;
+}
+.stat:nth-child(4) {
+  animation-delay: 120ms;
+}
+.stat:nth-child(5) {
+  animation-delay: 160ms;
+}
 
 .stat:hover {
   transform: translateY(-4px);
@@ -153,16 +156,38 @@ app-xp-bar {
     0 16px 26px rgba(59, 7, 100, 0.28);
 }
 
-.stat-pink { background: linear-gradient(145deg, #ff4fd8, #d946ef 55%, #7c3aed); }
-.stat-gold { background: linear-gradient(145deg, #fde68a, #fbbf24 48%, #f59e0b); color: #78350f; }
-.stat-rose { background: linear-gradient(145deg, #fb7185, #e11d48 55%, #9f1239); }
-.stat-magenta { background: linear-gradient(145deg, #f0abfc, #d946ef 50%, #7c3aed); }
-.stat-cyan { background: linear-gradient(145deg, #67e8f9, #22d3ee 42%, #3b82f6); color: #083344; }
-.stat-purple { background: linear-gradient(145deg, #a78bfa, #7c3aed 55%, #4c1d95); }
-.stat-teal { background: linear-gradient(145deg, #5eead4, #14b8a6 50%, #0f766e); }
-.stat-amber { background: linear-gradient(145deg, #fdba74, #f97316 48%, #c2410c); }
-.stat-orange { background: linear-gradient(145deg, #fda4af, #fb7185 40%, #db2777); }
-.stat-blue { background: linear-gradient(145deg, #93c5fd, #3b82f6 50%, #6d28d9); }
+.stat-pink {
+  background: linear-gradient(145deg, #ff4fd8, #d946ef 55%, #7c3aed);
+}
+.stat-gold {
+  background: linear-gradient(145deg, #fde68a, #fbbf24 48%, #f59e0b);
+  color: #78350f;
+}
+.stat-rose {
+  background: linear-gradient(145deg, #fb7185, #e11d48 55%, #9f1239);
+}
+.stat-magenta {
+  background: linear-gradient(145deg, #f0abfc, #d946ef 50%, #7c3aed);
+}
+.stat-cyan {
+  background: linear-gradient(145deg, #67e8f9, #22d3ee 42%, #3b82f6);
+  color: #083344;
+}
+.stat-purple {
+  background: linear-gradient(145deg, #a78bfa, #7c3aed 55%, #4c1d95);
+}
+.stat-teal {
+  background: linear-gradient(145deg, #5eead4, #14b8a6 50%, #0f766e);
+}
+.stat-amber {
+  background: linear-gradient(145deg, #fdba74, #f97316 48%, #c2410c);
+}
+.stat-orange {
+  background: linear-gradient(145deg, #fda4af, #fb7185 40%, #db2777);
+}
+.stat-blue {
+  background: linear-gradient(145deg, #93c5fd, #3b82f6 50%, #6d28d9);
+}
 
 dt {
   display: grid;

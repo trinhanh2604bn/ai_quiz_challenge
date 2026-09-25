@@ -17,15 +17,17 @@
   --radius: 16px;
   --radius-sm: 12px;
 
-  --primary: #4338ca;
+  --primary: var(--accent);
   --secondary: #334155;
   --success: #047857;
-  --background: #f3f4f8;
-  --card: #ffffff;
-  --text: #0f172a;
+  --background: var(--bg);
+  --card: var(--surface);
+  --text: var(--ink);
+  --hub-ink: #3b0764;
+  --hub-kicker: #7c3aed;
 
-  --font-heading: "Segoe UI", system-ui, sans-serif;
-  --font-body: "Segoe UI", system-ui, sans-serif;
+  --font-heading: 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Segoe UI', system-ui, sans-serif;
   --heading-size: clamp(1.5rem, 4vw, 2.25rem);
   --heading-weight: 800;
   --heading-line-height: 1.15;
@@ -51,9 +53,8 @@ body {
   min-height: 100vh;
   color: var(--ink);
   background:
-    radial-gradient(ellipse 80% 45% at 50% -10%, var(--bg-glow), transparent 55%),
-    var(--bg);
-  font-family: "Segoe UI", system-ui, sans-serif;
+    radial-gradient(ellipse 80% 45% at 50% -10%, var(--bg-glow), transparent 55%), var(--bg);
+  font-family: 'Segoe UI', system-ui, sans-serif;
   line-height: 1.5;
 }
 

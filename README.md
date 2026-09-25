@@ -46,7 +46,7 @@ Production build:
 npm run build
 ```
 
-Build output is written to `dist/`.
+That runs `ng build --configuration production`. Output is `dist/ai-knowledge-challenge/`. Source maps are off, licenses are extracted, and output files are hashed. The build copies `public/favicon.ico` and `public/game/` only. Unit-test bundles are written to `dist/test-out/` while tests run, and `npm run test:ci` removes that folder when the tests finish.
 
 ## Tests and formatting
 
@@ -72,11 +72,36 @@ A refresh clears the in-progress quiz. Stored profile, leaderboard, ranking, ach
 
 ## Architecture
 
-Solo quiz code lives under `src/app/features/quiz/`. Profile, ranking, achievements, audio, and battle live under `src/app/features/game/`.
+Standalone components use OnPush. Services own the rules and hold state in signals. Components render that state and emit actions.
 
-- Components render state and emit actions.
-- `QuizService` owns questions, scoring, streak, and total time.
+```
+src/
+  main.ts                 bootstrap
+  styles.scss             color, type, and spacing tokens
+  styles/_motion.scss     shared celebration and arena animations
+  app/
+    app.routes.ts         lazy routes and profile guards
+    core/
+      storage/            the only localStorage gateway
+      errors/             navigation recovery
+      a11y/               focus trap
+    features/quiz/        solo quiz, timer, results, leaderboard, analytics
+    features/game/
+      components/         lobby, setup, battle arena, shared HUD
+      profile/            profile, XP, avatars
+      ranking/            season board
+      achievements/
+      audio/              Web Audio oscillators
+      styles/             shared hub layout
+public/
+  favicon.ico
+  game/home/              images used by the lobby and quiz screens
+```
+
+- `QuizService` owns questions, scoring, streak, answer history, and frozen `timeTakenMs`.
 - `LeaderboardService` owns the top 10 board.
+- `AnalyticsService` owns average response time. It does not measure total quiz duration.
+- `RankingService` owns the separate season board.
 - `StorageService` is the only `localStorage` gateway.
 - `questionSeconds()` maps each difficulty to its countdown.
 

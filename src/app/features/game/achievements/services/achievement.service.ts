@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { StorageService } from '../../../../core/storage/storage.service';
-import { QUESTION_CATEGORIES, QuestionCategory } from '../../../quiz/models/question.model';
+import { QuestionCategory, isQuestionCategory } from '../../../quiz/models/question.model';
 import { BattleSession } from '../../models/battle-session.model';
 import { DEFAULT_ACHIEVEMENTS } from '../data/achievements.data';
 import {
@@ -52,8 +52,7 @@ export class AchievementService {
         bestAccuracy: Math.max(progress.bestAccuracy, wholeNumber(facts.accuracy)),
         perfectCount: progress.perfectCount + (perfect ? 1 : 0),
         bestStreak: Math.max(progress.bestStreak, wholeNumber(facts.maxStreak)),
-        hardQuizzesCompleted:
-          progress.hardQuizzesCompleted + (facts.difficulty === 'Hard' ? 1 : 0),
+        hardQuizzesCompleted: progress.hardQuizzesCompleted + (facts.difficulty === 'Hard' ? 1 : 0),
         seenQuizIds: [...progress.seenQuizIds, facts.completedAt],
       },
     });
@@ -305,16 +304,12 @@ function categories(value: unknown): QuestionCategory[] {
 
   const unique = new Set<QuestionCategory>();
   for (const item of value) {
-    if (isCategory(item)) {
+    if (isQuestionCategory(item)) {
       unique.add(item);
     }
   }
 
   return [...unique];
-}
-
-function isCategory(value: unknown): value is QuestionCategory {
-  return QUESTION_CATEGORIES.some((category) => category === value);
 }
 
 function numbers(value: unknown): number[] {

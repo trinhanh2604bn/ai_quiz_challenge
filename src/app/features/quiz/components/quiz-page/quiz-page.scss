@@ -1,3 +1,5 @@
+@use '../../../../../styles/motion' as motion;
+
 :host {
   display: block;
   position: relative;
@@ -12,12 +14,12 @@
 }
 
 :host::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: url("/game/home/home-background.png") center top / cover no-repeat fixed;
+  background: url('/game/home/home-background.png') center top / cover no-repeat fixed;
 }
 
 .crown,
@@ -194,23 +196,7 @@ app-timer {
   min-height: 44px;
 }
 
-@keyframes arena-enter {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes arena-float {
-  50% {
-    transform: translateY(-6px);
-  }
-}
+@include motion.arena;
 
 @container (min-width: 40rem) {
   .crown {

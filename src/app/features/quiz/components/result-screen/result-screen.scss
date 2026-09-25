@@ -1,3 +1,5 @@
+@use '../../../../../styles/motion' as motion;
+
 :host {
   --pink: #ff4fd8;
   --magenta: #d946ef;
@@ -504,36 +506,7 @@ input:focus-visible {
   outline-offset: 3px;
 }
 
-@keyframes result-enter {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes result-float {
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
-@keyframes sparkle-pulse {
-  50% {
-    opacity: 0.4;
-    transform: scale(0.84);
-  }
-}
-
-@keyframes trophy-glow {
-  50% {
-    transform: translateY(-4px) scale(1.04);
-  }
-}
+@include motion.celebration;
 
 @media (min-width: 768px) {
   .stage {

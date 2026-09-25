@@ -1,11 +1,11 @@
 export interface QuizResult {
-  score: number;
-  correctCount: number;
-  totalQuestions: number;
-  accuracy: number;
-  maxStreak: number;
-  completedAt: number;
-  timeTakenMs: number;
+  readonly score: number;
+  readonly correctCount: number;
+  readonly totalQuestions: number;
+  readonly accuracy: number;
+  readonly maxStreak: number;
+  readonly completedAt: number;
+  readonly timeTakenMs: number;
 }
 
 export function formatQuizDuration(timeTakenMs: number): string {

@@ -1,16 +1,12 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { StorageService } from '../../../../core/storage/storage.service';
-import { QUESTION_CATEGORIES, QuestionCategory } from '../../../quiz/models/question.model';
+import { QuestionCategory, isQuestionCategory } from '../../../quiz/models/question.model';
 import { GAME_MODES, GameMode } from '../../models/game-mode.model';
 import { avatarById } from '../../profile/data/avatars.data';
 import { ProfileService } from '../../profile/services/profile.service';
 import { DEFAULT_SEASON } from '../data/seasons.data';
 import { tierForScore } from '../data/tiers.data';
-import {
-  PlayerStanding,
-  RankingEntry,
-  RankingRecord,
-} from '../models/ranking-entry.model';
+import { PlayerStanding, RankingEntry, RankingRecord } from '../models/ranking-entry.model';
 import { RankTier } from '../models/rank-tier.model';
 import { Season } from '../models/season.model';
 
@@ -48,7 +44,7 @@ export class RankingService {
   }
 
   getCategoryRanking(category: QuestionCategory): readonly PlayerStanding[] {
-    if (!isCategory(category)) {
+    if (!isQuestionCategory(category)) {
       return [];
     }
 
@@ -116,7 +112,7 @@ export class RankingService {
       sourceId.length > SOURCE_MAX_LENGTH ||
       player.length === 0 ||
       player.length > PLAYER_MAX_LENGTH ||
-      !isCategory(record.category) ||
+      !isQuestionCategory(record.category) ||
       !isMode(record.mode) ||
       !Number.isFinite(record.score) ||
       !Number.isFinite(record.recordedAt)
@@ -262,7 +258,7 @@ function normalizeStoredEntry(value: unknown): RankingEntry | null {
     player.length === 0 ||
     player.length > PLAYER_MAX_LENGTH ||
     seasonId.length === 0 ||
-    !isCategory(category) ||
+    !isQuestionCategory(category) ||
     !isMode(mode) ||
     typeof entry['score'] !== 'number' ||
     typeof entry['recordedAt'] !== 'number' ||
@@ -292,10 +288,6 @@ function nonNegative(value: unknown): number {
   }
 
   return Math.floor(value);
-}
-
-function isCategory(value: unknown): value is QuestionCategory {
-  return QUESTION_CATEGORIES.some((category) => category === value);
 }
 
 function isMode(value: unknown): value is GameMode {

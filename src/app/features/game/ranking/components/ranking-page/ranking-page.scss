@@ -31,12 +31,7 @@
 
 .kicker,
 .you-kicker {
-  margin: 0 0 0.15rem;
-  color: #7c3aed;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  @include hub.kicker;
 }
 
 h1 {

@@ -1,3 +1,5 @@
+@use '../../../../../styles/motion' as motion;
+
 :host {
   --pink: #ff4fd8;
   --blue: #3b82f6;
@@ -15,7 +17,7 @@
 
 :host::before,
 :host::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -23,7 +25,7 @@
 }
 
 :host::before {
-  background: url("/game/home/home-background.png") center top / cover no-repeat fixed;
+  background: url('/game/home/home-background.png') center top / cover no-repeat fixed;
 }
 
 :host::after {
@@ -86,9 +88,24 @@
   animation: sparkle-pulse 2.6s ease-in-out infinite;
 }
 
-.sparkle-a { top: 8%; left: 12%; }
-.sparkle-b { top: 18%; right: 14%; width: 0.55rem; height: 0.55rem; animation-delay: 0.45s; }
-.sparkle-c { bottom: 12%; left: 28%; width: 0.65rem; height: 0.65rem; animation-delay: 0.9s; }
+.sparkle-a {
+  top: 8%;
+  left: 12%;
+}
+.sparkle-b {
+  top: 18%;
+  right: 14%;
+  width: 0.55rem;
+  height: 0.55rem;
+  animation-delay: 0.45s;
+}
+.sparkle-c {
+  bottom: 12%;
+  left: 28%;
+  width: 0.65rem;
+  height: 0.65rem;
+  animation-delay: 0.9s;
+}
 
 .mascot,
 .hero-trophy,
@@ -422,48 +439,8 @@ dd {
   border: 0;
 }
 
-@keyframes result-enter {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes result-float {
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
-@keyframes sparkle-pulse {
-  50% {
-    opacity: 0.4;
-    transform: scale(0.84);
-  }
-}
-
-@keyframes trophy-glow {
-  50% {
-    transform: translateY(-4px) scale(1.04);
-  }
-}
-
-@keyframes vs-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
+@include motion.celebration;
+@include motion.vs-pop;
 
 @media (min-width: 768px) {
   .stage {

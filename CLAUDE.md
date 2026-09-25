@@ -46,15 +46,24 @@ The solo quiz must keep these behaviors:
 # Architecture
 
 ```
-src/app/
-  features/quiz/          solo quiz, timer, results, leaderboard, analytics
-  features/game/
-    profile/
-    ranking/
-    achievements/
-    audio/
-    components/           lobby, setup, battle arena, shared HUD
-  core/storage/           localStorage gateway
+src/
+  styles.scss             global tokens: color, type, spacing, surfaces
+  styles/_motion.scss     shared result and arena animations
+  app/
+    core/storage/         localStorage gateway
+    core/errors/          navigation recovery
+    core/a11y/            focus trap
+    features/quiz/        solo quiz, timer, results, leaderboard, analytics
+    features/game/
+      profile/            profile, XP, avatars
+      ranking/            season board
+      achievements/
+      audio/              Web Audio oscillators
+      components/         lobby, setup, battle arena, shared HUD
+      styles/             shared hub layout
+public/
+  favicon.ico
+  game/home/              images the screens actually use
 ```
 
 Principles:
@@ -109,27 +118,27 @@ Average response time on the performance dashboard is the mean of per-question `
 
 # Storage
 
-| Key | Owner | Fallback |
-| --- | --- | --- |
-| `ai-player-profile` | `ProfileService` | empty profile |
-| `ai-quiz-leaderboard` | `LeaderboardService` | empty board, max 10 |
-| `ai-quiz-active-season` | `RankingService` | default season |
-| `ai-quiz-ranking` | `RankingService` | empty board |
-| `ai-quiz-achievements` | `AchievementService` | empty unlock state |
-| `ai-quiz-game-settings` | `SettingsService` | default sound settings |
+| Key                     | Owner                | Fallback               |
+| ----------------------- | -------------------- | ---------------------- |
+| `ai-player-profile`     | `ProfileService`     | empty profile          |
+| `ai-quiz-leaderboard`   | `LeaderboardService` | empty board, max 10    |
+| `ai-quiz-active-season` | `RankingService`     | default season         |
+| `ai-quiz-ranking`       | `RankingService`     | empty board            |
+| `ai-quiz-achievements`  | `AchievementService` | empty unlock state     |
+| `ai-quiz-game-settings` | `SettingsService`    | default sound settings |
 
 Quiz progress, answer history, and the performance report stay in memory for the current session. A refresh clears them. Validate JSON before use.
 
 # Where to change common rules
 
-| Change | Edit |
-| --- | --- |
-| Question count, points, streak, `timeTakenMs` | `features/quiz/services/quiz.service.ts` |
-| Countdown length | `features/quiz/models/question-seconds.ts` |
-| Timer display and timeout | `features/quiz/components/timer/` |
-| Leaderboard size or sort | `features/quiz/services/leaderboard.service.ts` |
-| Result labels | `features/quiz/components/result-screen/` |
-| Average response time | `features/quiz/services/analytics.service.ts` |
+| Change                                        | Edit                                            |
+| --------------------------------------------- | ----------------------------------------------- |
+| Question count, points, streak, `timeTakenMs` | `features/quiz/services/quiz.service.ts`        |
+| Countdown length                              | `features/quiz/models/question-seconds.ts`      |
+| Timer display and timeout                     | `features/quiz/components/timer/`               |
+| Leaderboard size or sort                      | `features/quiz/services/leaderboard.service.ts` |
+| Result labels                                 | `features/quiz/components/result-screen/`       |
+| Average response time                         | `features/quiz/services/analytics.service.ts`   |
 
 Pass `questionSeconds()` into the existing timer. Do not hard-code 15 seconds in a screen.
 
@@ -146,7 +155,7 @@ npm run format
 npm run format:check
 ```
 
-`npm start` serves `http://localhost:4200/`. `npm run build` writes `dist/`. `npm test` is watch mode. `npm run test:ci` runs headless and does not watch.
+`npm start` serves `http://localhost:4200/`. `npm run build` runs `ng build --configuration production` and writes `dist/ai-knowledge-challenge/`. Production builds use AOT, optimization, hashed filenames, and no source maps. Copied assets are `public/favicon.ico` and `public/game/` only. `npm test` is watch mode. `npm run test:ci` runs headless and does not watch. The test runner may write `dist/test-out/`; `posttest:ci` deletes that folder so it is not left next to the production build.
 
 `format:check` reports files that Prettier would change. The repository was not formatted all at once. Format files you edit; do not reformat unrelated files.
 
