@@ -7,6 +7,7 @@ import {
   battleAchievementFacts,
 } from '../../achievements/services/achievement.service';
 import { ProfileService, battleProgressFacts } from '../../profile/services/profile.service';
+import { avatarById } from '../../profile/data/avatars.data';
 import { RankingService } from '../../ranking/services/ranking.service';
 import { BattlePlayer } from '../../models/battle-player.model';
 import { BattleSession } from '../../models/battle-session.model';
@@ -32,6 +33,9 @@ export class BattleResultComponent implements OnInit {
   readonly session = this.battle.session;
   readonly entries = this.leaderboard.entries;
   readonly leaderboardOpen = signal(false);
+  readonly celebrateSrc = 'game/home/mascot-celebrate.png';
+  readonly idleSrc = 'game/home/mascot-idle.png';
+  readonly trophySrc = 'game/home/icon-achievements.png';
   readonly totalQuestions = computed(() => this.session()?.questions.length ?? 0);
   readonly winner = computed(() => {
     const session = this.session();
@@ -79,6 +83,19 @@ export class BattleResultComponent implements OnInit {
 
   accuracyFor(correctAnswers: number): number {
     return accuracyPercent(correctAnswers, this.totalQuestions());
+  }
+
+  avatarGlyph(player: BattlePlayer): string {
+    if (player.id === 'player-1') {
+      const profile = this.profiles.profile();
+      const avatar = profile ? avatarById(profile.avatarId) : null;
+      if (avatar) {
+        return avatar.glyph;
+      }
+    }
+
+    const letter = player.name.trim().charAt(0).toUpperCase();
+    return letter || '?';
   }
 
   toggleLeaderboard(): void {

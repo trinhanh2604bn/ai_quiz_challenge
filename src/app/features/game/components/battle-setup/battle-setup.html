@@ -1,109 +1,147 @@
-<app-game-background>
-  <section
-    class="setup"
-    [attr.data-game-mode]="mode() ?? 'none'"
-    [attr.data-game-state]="state()"
-  >
-    <header>
-      <app-game-card>
-        <p class="eyebrow">Two players</p>
-        <h1 class="game-heading">Battle setup</h1>
-        <p class="game-body lead">
-          Name both players, then choose a category and a difficulty. The battle uses
-          {{ sessionQuestionCount }} questions.
-        </p>
-      </app-game-card>
+<app-setup-toolbar (leave)="goBack()" />
+
+<section
+  class="setup setup-battle"
+  [attr.data-game-mode]="mode() ?? 'none'"
+  [attr.data-game-state]="state()"
+>
+  <div class="stage">
+    <header class="brand">
+      <img class="logo" src="game/home/game-logo.png" alt="AI Knowledge Challenge" />
     </header>
 
-    <div class="versus">
-      <app-game-card>
-        <p class="player-kicker">Player 1</p>
-        <label class="name" for="player-one-name">
-          Player 1 name
-          <input
-            id="player-one-name"
-            type="text"
-            name="player-one"
-            autocomplete="off"
-            [value]="playerOneName()"
-            (input)="updatePlayerOneName($event)"
-          />
-        </label>
-      </app-game-card>
+    <div class="glass glass-battle">
+      <img class="duel" src="game/home/mode-battle.png" alt="" />
 
-      <p class="vs" aria-hidden="true">VS</p>
+      <div class="intro">
+        <p class="badge badge-arena">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m13 3-8 10h6l-1 8 8-10h-6z" fill="currentColor" />
+          </svg>
+          Two Players
+        </p>
+        <h1><span class="pop">Battle</span> Setup</h1>
+        <p class="lead">
+          Name two players, then choose a category and a difficulty. The battle uses
+          {{ sessionQuestionCount }} questions.
+        </p>
+      </div>
 
-      <app-game-card>
-        <p class="player-kicker">Player 2</p>
-        <label class="name" for="player-two-name">
-          Player 2 name
-          <input
-            id="player-two-name"
-            type="text"
-            name="player-two"
-            autocomplete="off"
-            [value]="playerTwoName()"
-            (input)="updatePlayerTwoName($event)"
-          />
-        </label>
-      </app-game-card>
-    </div>
+      <div class="players">
+        <p class="section-label">Players</p>
+        <div class="versus">
+          <div class="player-card player-one">
+            <p class="player-kicker">Player 1</p>
+            <label class="name" for="player-one-name">
+              <span class="avatar avatar-pink" aria-hidden="true">
+                <svg viewBox="0 0 32 32">
+                  <rect x="7" y="8" width="18" height="14" rx="6" fill="#fff" />
+                  <circle cx="13" cy="15" r="1.4" fill="#db2777" />
+                  <circle cx="19" cy="15" r="1.4" fill="#db2777" />
+                  <path d="M13 18h6" stroke="#db2777" stroke-width="1.4" stroke-linecap="round" />
+                </svg>
+              </span>
+              <span class="name-copy">
+                <span class="name-field">
+                  <input
+                    id="player-one-name"
+                    type="text"
+                    name="player-one"
+                    autocomplete="off"
+                    placeholder="Player 1 name"
+                    aria-label="Player 1 name"
+                    [value]="playerOneName()"
+                    (input)="updatePlayerOneName($event)"
+                  />
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 16.5V20h3.5L18 9.5 14.5 6z" fill="none" stroke="currentColor" stroke-width="1.8" />
+                  </svg>
+                </span>
+              </span>
+            </label>
+          </div>
 
-    <app-game-card>
-      <fieldset class="selector">
-        <legend>Category</legend>
-        <div class="choices">
-          @for (item of categories; track item) {
-            <button
-              type="button"
-              class="choice"
-              [class.is-selected]="category() === item"
-              [attr.aria-pressed]="category() === item"
-              [attr.data-choice]="item"
-              (click)="selectCategory(item)"
-            >
-              {{ item }}
-            </button>
-          }
+          <p class="vs" aria-hidden="true">VS</p>
+
+          <div class="player-card player-two">
+            <p class="player-kicker">Player 2</p>
+            <label class="name" for="player-two-name">
+              <span class="avatar avatar-blue" aria-hidden="true">
+                <svg viewBox="0 0 32 32">
+                  <rect x="7" y="8" width="18" height="14" rx="6" fill="#fff" />
+                  <circle cx="13" cy="15" r="1.4" fill="#2563eb" />
+                  <circle cx="19" cy="15" r="1.4" fill="#2563eb" />
+                  <path d="M13 18h6" stroke="#2563eb" stroke-width="1.4" stroke-linecap="round" />
+                </svg>
+              </span>
+              <span class="name-copy">
+                <span class="name-field">
+                  <input
+                    id="player-two-name"
+                    type="text"
+                    name="player-two"
+                    autocomplete="off"
+                    placeholder="Player 2 name"
+                    aria-label="Player 2 name"
+                    [value]="playerTwoName()"
+                    (input)="updatePlayerTwoName($event)"
+                  />
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 16.5V20h3.5L18 9.5 14.5 6z" fill="none" stroke="currentColor" stroke-width="1.8" />
+                  </svg>
+                </span>
+              </span>
+            </label>
+          </div>
         </div>
-      </fieldset>
-    </app-game-card>
+      </div>
 
-    <app-game-card>
-      <fieldset class="selector">
-        <legend>Difficulty</legend>
-        <div class="choices difficulties">
-          @for (item of difficulties; track item) {
-            <button
-              type="button"
-              class="choice"
-              [class.is-selected]="difficulty() === item"
-              [attr.aria-pressed]="difficulty() === item"
-              [attr.data-choice]="item"
-              (click)="selectDifficulty(item)"
-            >
-              {{ item }}
-            </button>
-          }
-        </div>
-      </fieldset>
-    </app-game-card>
+      <app-challenge-picker
+        [category]="category()"
+        [difficulty]="difficulty()"
+        (categorySelected)="selectCategory($event)"
+        (difficultySelected)="selectDifficulty($event)"
+      />
 
-    @if (unavailable()) {
-      <p class="notice" role="alert">No questions available for this challenge.</p>
-    } @else if (sessionReady()) {
-      <p class="hint" role="status">Battle session created. Waiting to start.</p>
-    } @else if (!canStart()) {
-      <p class="hint">Enter both names and select a category and a difficulty.</p>
-    } @else {
-      <p class="hint">Ready to start {{ sessionQuestionCount }} questions.</p>
-    }
+      <ul class="facts facts-two" aria-label="Battle rules">
+        <li>
+          <span class="fact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <rect x="6" y="3" width="12" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
+              <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="fact-title">{{ sessionQuestionCount }} Questions</span>
+          <span class="fact-note">Same for both</span>
+        </li>
+        <li>
+          <span class="fact-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="1.8" />
+              <path d="M12 13V9M12 6V4M9 4h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="fact-title">15 Seconds Each</span>
+          <span class="fact-note">Per question</span>
+        </li>
+      </ul>
 
-    <div class="actions">
-      <app-game-button variant="secondary" (click)="goBack()">Back</app-game-button>
-      <app-game-button variant="primary" [disabled]="!canStart()" (click)="createSession()">
-        Start Battle
-      </app-game-button>
+      @if (unavailable()) {
+        <p class="notice" role="alert">No questions available for this challenge.</p>
+      } @else if (sessionReady()) {
+        <p class="hint" role="status">Battle session created. Waiting to start.</p>
+      } @else if (!canStart()) {
+        <p class="hint">Enter both names and select a category and a difficulty.</p>
+      } @else {
+        <p class="hint">Ready to start {{ sessionQuestionCount }} questions.</p>
+      }
+
+      <button type="button" class="cta cta-battle" [disabled]="!canStart()" (click)="createSession()">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m13 3-8 10h6l-1 8 8-10h-6z" fill="currentColor" />
+        </svg>
+        START BATTLE
+      </button>
     </div>
-  </section>
-</app-game-background>
+  </div>
+</section>

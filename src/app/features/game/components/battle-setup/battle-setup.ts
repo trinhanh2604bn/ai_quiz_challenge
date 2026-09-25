@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  DIFFICULTY_LEVELS,
-  QUESTION_CATEGORIES,
   Difficulty,
   QuestionCategory,
 } from '../../../quiz/models/question.model';
@@ -12,14 +10,13 @@ import { BattlePlayer } from '../../models/battle-player.model';
 import { BattleService } from '../../services/battle.service';
 import { GameService } from '../../services/game.service';
 import { ProfileService } from '../../profile/services/profile.service';
-import { GameBackgroundComponent } from '../game-background/game-background';
-import { GameButtonComponent } from '../game-button/game-button';
-import { GameCardComponent } from '../game-card/game-card';
+import { ChallengePickerComponent } from '../challenge-picker/challenge-picker';
+import { SetupToolbarComponent } from '../setup-toolbar/setup-toolbar';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-battle-setup',
-  imports: [GameBackgroundComponent, GameCardComponent, GameButtonComponent],
+  imports: [SetupToolbarComponent, ChallengePickerComponent],
   templateUrl: './battle-setup.html',
   styleUrls: ['../../styles/setup-screen.scss', './battle-setup.scss'],
 })
@@ -31,8 +28,6 @@ export class BattleSetupComponent implements OnInit {
   private readonly profiles = inject(ProfileService);
   private readonly router = inject(Router);
 
-  readonly categories = QUESTION_CATEGORIES;
-  readonly difficulties = DIFFICULTY_LEVELS;
   readonly mode = this.game.mode;
   readonly state = this.game.state;
   readonly sessionQuestionCount = this.quiz.sessionQuestionCount;

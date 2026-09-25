@@ -1,73 +1,96 @@
-<app-game-background>
-  <section
-    class="setup"
-    [attr.data-game-mode]="mode() ?? 'none'"
-    [attr.data-game-state]="state()"
-  >
-    <header>
-      <app-game-card>
-        <p class="eyebrow">Single player</p>
-        <h1 class="game-heading">Game setup</h1>
-        <p class="game-body lead">
-          Choose a category and a difficulty. This match has {{ sessionQuestionCount }} questions
-          and a 15-second timer.
-        </p>
-      </app-game-card>
+<app-setup-toolbar (leave)="goBack()" />
+
+<section
+  class="setup"
+  [attr.data-game-mode]="mode() ?? 'none'"
+  [attr.data-game-state]="state()"
+>
+  <div class="stage">
+    <header class="brand">
+      <img class="logo" src="game/home/game-logo.png" alt="AI Knowledge Challenge" />
     </header>
 
-    <app-game-card>
-      <fieldset class="selector">
-        <legend>Category</legend>
-        <div class="choices">
-          @for (item of categories; track item) {
-            <button
-              type="button"
-              class="choice"
-              [class.is-selected]="category() === item"
-              [attr.aria-pressed]="category() === item"
-              [attr.data-choice]="item"
-              (click)="selectCategory(item)"
-            >
-              {{ item }}
-            </button>
-          }
+    <div class="layout">
+      <img class="mascot" src="game/home/mascot-point.png" alt="" />
+
+      <div class="glass">
+        <div class="intro">
+          <p class="badge">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M8 8h8v3a4 4 0 0 1-8 0zm-2 1H4v2a3 3 0 0 0 3 3m12-5h2v2a3 3 0 0 1-3 3M12 15v3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+            Solo Quest
+          </p>
+          <h1>Choose Your <span class="pop">Challenge</span></h1>
+          <p class="lead">
+            Pick a category and a difficulty. This match has {{ sessionQuestionCount }} questions
+            and a 15-second timer.
+          </p>
         </div>
-      </fieldset>
-    </app-game-card>
 
-    <app-game-card>
-      <fieldset class="selector">
-        <legend>Difficulty</legend>
-        <div class="choices difficulties">
-          @for (item of difficulties; track item) {
-            <button
-              type="button"
-              class="choice"
-              [class.is-selected]="difficulty() === item"
-              [attr.aria-pressed]="difficulty() === item"
-              [attr.data-choice]="item"
-              (click)="selectDifficulty(item)"
-            >
-              {{ item }}
-            </button>
-          }
-        </div>
-      </fieldset>
-    </app-game-card>
+        <app-challenge-picker
+          [category]="category()"
+          [difficulty]="difficulty()"
+          (categorySelected)="selectCategory($event)"
+          (difficultySelected)="selectDifficulty($event)"
+        />
 
-    @if (unavailable()) {
-      <p class="notice" role="alert">No questions available for this challenge.</p>
-    } @else if (category() === null || difficulty() === null) {
-      <p class="hint">Select a category and a difficulty.</p>
-    } @else {
-      <p class="hint">Ready to start {{ sessionQuestionCount }} questions.</p>
-    }
+        <ul class="facts" aria-label="Match rules">
+          <li>
+            <span class="fact-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="6" y="3" width="12" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              </svg>
+            </span>
+            <span class="fact-title">{{ sessionQuestionCount }} Questions</span>
+            <span class="fact-note">Per match</span>
+          </li>
+          <li>
+            <span class="fact-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <path d="M12 13V9M12 6V4M9 4h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              </svg>
+            </span>
+            <span class="fact-title">15 Seconds</span>
+            <span class="fact-note">Per question</span>
+          </li>
+          <li>
+            <span class="fact-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M12 20s-6-3.6-6-8a3.4 3.4 0 0 1 6-2 3.4 3.4 0 0 1 6 2c0 4.4-6 8-6 8z"
+                  fill="currentColor"
+                />
+              </svg>
+            </span>
+            <span class="fact-title">Streak Bonus</span>
+            <span class="fact-note">Get higher scores</span>
+          </li>
+        </ul>
 
-    <div class="actions">
-      <app-game-button variant="secondary" (click)="goBack()">Back</app-game-button>
-      <app-game-button variant="primary" [disabled]="!canStart()" (click)="startGame()">
-        Start Game
-      </app-game-button>
+        @if (unavailable()) {
+          <p class="notice" role="alert">No questions available for this challenge.</p>
+        } @else if (category() === null || difficulty() === null) {
+          <p class="hint">Select a category and a difficulty.</p>
+        } @else {
+          <p class="hint">Ready to start {{ sessionQuestionCount }} questions.</p>
+        }
+
+        <button type="button" class="cta" [disabled]="!canStart()" (click)="startGame()">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 6.5v11l10-5.5z" fill="currentColor" />
+          </svg>
+          START QUEST
+        </button>
+      </div>
     </div>
-  </section>
-</app-game-background>
+  </div>
+</section>

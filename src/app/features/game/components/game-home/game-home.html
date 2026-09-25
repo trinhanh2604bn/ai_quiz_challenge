@@ -1,125 +1,179 @@
-<app-game-background>
-  <section
-    class="lobby"
-    [attr.data-game-mode]="mode() ?? 'none'"
-    [attr.data-game-state]="state()"
+<div class="quick-controls">
+  <button
+    type="button"
+    class="quick"
+    aria-label="Settings"
+    aria-haspopup="dialog"
+    [attr.aria-expanded]="settingsOpen()"
+    (click)="openSettings()"
   >
-    <header class="hero">
-      <p class="eyebrow">Game lobby</p>
-      <h1 class="game-heading">AI Knowledge Challenge</h1>
-      <p class="game-body lead">
-        Choose a solo quest or enter the battle arena. Ten questions, fifteen seconds each.
-      </p>
+    <img [src]="settingsIconSrc" alt="" />
+  </button>
+  <button
+    type="button"
+    class="quick"
+    role="switch"
+    [attr.aria-checked]="soundEnabled()"
+    [attr.aria-label]="soundLabel()"
+    (click)="toggleSound()"
+  >
+    <img [src]="soundIconSrc()" alt="" />
+  </button>
+</div>
+
+<div class="sparkles" aria-hidden="true">
+  <span class="sparkle sparkle-a"></span>
+  <span class="sparkle sparkle-b"></span>
+  <span class="sparkle sparkle-c"></span>
+</div>
+
+<section
+  class="lobby"
+  [attr.data-game-mode]="mode() ?? 'none'"
+  [attr.data-game-state]="state()"
+>
+  <div class="stage">
+    <header class="brand">
+      <h1>
+        <img class="logo" [src]="logoSrc" alt="AI Knowledge Challenge" />
+      </h1>
+      <img class="slogan" [src]="sloganSrc" alt="Play, learn, challenge, grow smarter" />
+      <img class="mascot mascot-mobile" [src]="mascotSrc" alt="" />
     </header>
 
     @if (player(); as profile) {
-      <div class="profile-summary">
-        <app-profile-card
-          [nickname]="profile.nickname"
-          [avatarId]="profile.avatarId"
-          [level]="profile.level"
-        />
-        <app-xp-bar [experience]="profile.experience" />
-      </div>
+      <section class="profile-panel" aria-label="Player progress">
+        <div class="profile-identity">
+          <span class="profile-avatar" aria-hidden="true">{{ avatarGlyph() }}</span>
+          <div class="profile-copy">
+            <p class="profile-name">{{ profile.nickname }}</p>
+            <p class="profile-level">Level {{ profile.level }}</p>
+          </div>
+        </div>
+        <div
+          class="xp-track"
+          role="progressbar"
+          aria-label="Experience toward the next level"
+          [attr.aria-valuemin]="0"
+          [attr.aria-valuemax]="xp().span"
+          [attr.aria-valuenow]="xp().intoLevel"
+        >
+          <span class="xp-fill" [style.width.%]="xp().percent"></span>
+        </div>
+        <p class="xp-caption">{{ xp().intoLevel }} / {{ xp().span }} XP</p>
+      </section>
     }
 
     <div class="modes">
       <button
         type="button"
-        class="mode-card"
+        class="mode-card mode-card-solo"
         [class.is-selected]="mode() === 'single-player'"
         [attr.aria-pressed]="mode() === 'single-player'"
         (click)="chooseSinglePlayer()"
       >
-        <app-game-card>
-          <span class="mode-body">
-            <span class="icon icon-solo" aria-hidden="true"></span>
-            <span class="mode-copy">
-              <span class="mode-kicker">Solo match</span>
-              <span class="mode-title">Solo Quest</span>
-              <span class="mode-desc">Pick a category and difficulty, then play on your own.</span>
-            </span>
-          </span>
-        </app-game-card>
+        <span class="mode-art">
+          <img [src]="soloArtSrc" alt="" />
+        </span>
+        <span class="mode-copy">
+          <span class="mode-kicker">Solo match</span>
+          <span class="mode-title">Solo Quest</span>
+          <span class="mode-desc">Pick a category and difficulty, then play on your own.</span>
+        </span>
+        <span class="play" aria-hidden="true"></span>
       </button>
 
       <button
         type="button"
-        class="mode-card"
+        class="mode-card mode-card-battle"
         [class.is-selected]="mode() === 'two-player'"
         [attr.aria-pressed]="mode() === 'two-player'"
         (click)="chooseTwoPlayer()"
       >
-        <app-game-card>
-          <span class="mode-body">
-            <span class="icon icon-battle" aria-hidden="true"></span>
-            <span class="mode-copy">
-              <span class="mode-kicker">Head to head</span>
-              <span class="mode-title">Battle Arena</span>
-              <span class="mode-desc">Name two players and compete on the same questions.</span>
-            </span>
-          </span>
-        </app-game-card>
+        <span class="mode-art">
+          <img [src]="battleArtSrc" alt="" />
+        </span>
+        <span class="mode-copy">
+          <span class="mode-kicker">Head to head</span>
+          <span class="mode-title">Battle Arena</span>
+          <span class="mode-desc">Name two players and compete on the same questions.</span>
+        </span>
+        <span class="play" aria-hidden="true"></span>
       </button>
     </div>
+
+    <img class="mascot mascot-desktop" [src]="mascotSrc" alt="" />
 
     @if (mode() === 'two-player' && state() === 'setup') {
       <p class="status" role="status">Two Players selected.</p>
     }
 
-    <div class="utilities">
-      <app-game-button variant="secondary" (click)="openProfile()">Profile</app-game-button>
-      <app-game-button variant="secondary" (click)="openAchievements()">
-        Achievements
-      </app-game-button>
-      <app-game-button variant="secondary" (click)="openRanking()">Ranking</app-game-button>
-      <app-game-button
-        variant="secondary"
-        popup="dialog"
-        [expanded]="leaderboardOpen()"
+    <div class="utility-panel">
+      <button type="button" class="utility" (click)="openProfile()">
+        <img [src]="profileIconSrc" alt="" />
+        <span>Profile</span>
+      </button>
+      <button type="button" class="utility" (click)="openAchievements()">
+        <img [src]="achievementsIconSrc" alt="" />
+        <span>Achievements</span>
+      </button>
+      <button type="button" class="utility" (click)="openRanking()">
+        <img [src]="rankingIconSrc" alt="" />
+        <span>Ranking</span>
+      </button>
+      <button
+        type="button"
+        class="utility"
+        aria-haspopup="dialog"
+        [attr.aria-expanded]="leaderboardOpen()"
         (click)="openLeaderboard()"
       >
-        Leaderboard
-      </app-game-button>
-      <app-game-button
-        variant="secondary"
-        popup="dialog"
-        [expanded]="settingsOpen()"
+        <img [src]="leaderboardIconSrc" alt="" />
+        <span>Leaderboard</span>
+      </button>
+      <button
+        type="button"
+        class="utility"
+        aria-haspopup="dialog"
+        [attr.aria-expanded]="settingsOpen()"
         (click)="openSettings()"
       >
-        Settings
-      </app-game-button>
-      <app-game-button
-        variant="secondary"
-        buttonRole="switch"
-        [checked]="soundEnabled()"
+        <img [src]="settingsIconSrc" alt="" />
+        <span>Settings</span>
+      </button>
+      <button
+        type="button"
+        class="utility"
+        role="switch"
+        [attr.aria-checked]="soundEnabled()"
+        [attr.aria-label]="soundLabel()"
         (click)="toggleSound()"
       >
-        {{ soundEnabled() ? 'Sound on' : 'Sound off' }}
-      </app-game-button>
+        <img [src]="soundIconSrc()" alt="" />
+        <span>Sound</span>
+      </button>
     </div>
-  </section>
-</app-game-background>
+  </div>
+</section>
 
 @if (settingsOpen()) {
   <app-settings-modal (closed)="closeSettings()" />
 }
 
 @if (leaderboardOpen()) {
-  <div class="backdrop" (click)="closeLeaderboard()">
-    <app-game-card (click)="$event.stopPropagation()">
-      <div
-        class="dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="leaderboard-heading"
-        (keydown)="trapDialogFocus($event)"
-      >
-        <app-leaderboard [entries]="entries()" />
-        <app-game-button #leaderboardClose variant="primary" (click)="closeLeaderboard()">
-          Close
-        </app-game-button>
-      </div>
-    </app-game-card>
+  <div class="backdrop leaderboard-backdrop" (click)="closeLeaderboard()">
+    <div
+      class="leaderboard-dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="leaderboard-heading"
+      (click)="$event.stopPropagation()"
+      (keydown)="trapDialogFocus($event)"
+    >
+      <app-leaderboard [entries]="entries()" appearance="modal" />
+      <app-game-button #leaderboardClose variant="primary" (click)="closeLeaderboard()">
+        Close
+      </app-game-button>
+    </div>
   </div>
 }

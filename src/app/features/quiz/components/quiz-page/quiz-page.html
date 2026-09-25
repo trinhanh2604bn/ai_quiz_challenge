@@ -1,21 +1,62 @@
-<app-game-background>
-  <section class="arena">
+<div class="crown">
+  <span class="crown-spacer"></span>
+  <img class="logo" src="game/home/game-logo.png" alt="AI Knowledge Challenge" />
+  <div class="tools">
+    <button
+      type="button"
+      class="icon-btn"
+      aria-label="Settings"
+      aria-haspopup="dialog"
+      [attr.aria-expanded]="settingsOpen()"
+      (click)="openSettings($event)"
+    >
+      <img [src]="settingsIconSrc" alt="" />
+    </button>
+    <button
+      type="button"
+      class="icon-btn"
+      role="switch"
+      [attr.aria-checked]="soundEnabled()"
+      [attr.aria-label]="soundLabel()"
+      (click)="toggleSound()"
+    >
+      <img [src]="soundIconSrc()" alt="" />
+    </button>
+  </div>
+</div>
+
+<section class="arena">
+  <div class="status">
     <app-game-hud
-      playerName="You"
+      [playerName]="hudName()"
+      [avatar]="hudAvatar()"
+      [level]="hudLevel()"
+      [xpPercent]="hudXpPercent()"
+      [xpLabel]="hudXpLabel()"
       [score]="score()"
       [correctCount]="correctCount()"
+      [answerTotal]="totalQuestions()"
       [streak]="streak()"
       [multiplier]="multiplier()"
       [progress]="progress()"
       [questionLabel]="questionLabel()"
       [detail]="sessionDetail()"
     />
+    <div class="clock">
+      @for (question of visibleQuestions(); track question.id) {
+        <app-timer (timedOut)="onTimeout(question.id)" />
+      }
+      <p class="qmark">{{ questionNumber() }} / {{ totalQuestions() }}</p>
+    </div>
+  </div>
 
-    @for (question of visibleQuestions(); track question.id) {
+  @for (question of visibleQuestions(); track question.id) {
+    <div class="stage">
+      <div class="host" aria-hidden="true">
+        <p class="bubble">Let's test your AI knowledge!</p>
+        <img class="mascot" src="game/home/mascot-point.png" alt="" />
+      </div>
       <div class="round">
-        <div class="round-head">
-          <app-timer (timedOut)="onTimeout(question.id)" />
-        </div>
         <app-question-card
           [question]="question"
           [badge]="questionLabel()"
@@ -23,15 +64,17 @@
           (answerSelected)="onAnswerSelected($event)"
         />
       </div>
-    }
+    </div>
+  }
 
-    @if (showEmptySelection()) {
-      <app-game-card>
-        <div class="empty-state">
-          <p>No questions available for this selection.</p>
-          <a class="btn btn-secondary" routerLink="/">Choose again</a>
-        </div>
-      </app-game-card>
-    }
-  </section>
-</app-game-background>
+  @if (showEmptySelection()) {
+    <div class="empty-state">
+      <p>No questions available for this selection.</p>
+      <a class="btn btn-secondary" routerLink="/">Choose again</a>
+    </div>
+  }
+</section>
+
+@if (settingsOpen()) {
+  <app-settings-modal (closed)="closeSettings()" />
+}

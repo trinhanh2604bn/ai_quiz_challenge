@@ -15,7 +15,6 @@ import { ProfileService, battleProgressFacts } from '../../profile/services/prof
 import { BattleService } from '../../services/battle.service';
 import { GameService } from '../../services/game.service';
 import { BattleTransitionComponent } from '../battle-transition/battle-transition';
-import { GameBackgroundComponent } from '../game-background/game-background';
 import { PlayerPanelComponent } from '../player-panel/player-panel';
 
 const FEEDBACK_DELAY_MS = 800;
@@ -24,7 +23,6 @@ const FEEDBACK_DELAY_MS = 800;
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-battle-arena',
   imports: [
-    GameBackgroundComponent,
     PlayerPanelComponent,
     QuestionCardComponent,
     TimerComponent,

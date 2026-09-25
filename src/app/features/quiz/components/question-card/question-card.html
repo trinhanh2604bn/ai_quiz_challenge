@@ -1,5 +1,9 @@
 <article class="prompt">
-  <p class="badge">{{ badge() || question().category }}</p>
+  <div class="chips">
+    <p class="chip">{{ question().category }}</p>
+    <p class="chip" [attr.data-level]="question().difficulty">{{ question().difficulty }}</p>
+    <p class="badge">{{ badge() || question().category }}</p>
+  </div>
   <h2>{{ question().text }}</h2>
   <div class="options" role="group" aria-label="Answer options">
     @for (option of question().options; track $index) {

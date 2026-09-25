@@ -4,7 +4,6 @@ import { QUESTION_CATEGORIES, QuestionCategory } from '../../../../quiz/models/q
 import { AudioService } from '../../../audio/services/audio.service';
 import { GameBackgroundComponent } from '../../../components/game-background/game-background';
 import { GameButtonComponent } from '../../../components/game-button/game-button';
-import { GameCardComponent } from '../../../components/game-card/game-card';
 import { avatarById } from '../../../profile/data/avatars.data';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { GameMode } from '../../../models/game-mode.model';
@@ -20,7 +19,6 @@ type RankingBoard = 'global' | 'season' | 'category';
   imports: [
     GameBackgroundComponent,
     GameButtonComponent,
-    GameCardComponent,
     RankBadgeComponent,
     SeasonCardComponent,
   ],
@@ -51,6 +49,15 @@ export class RankingPageComponent {
     }
 
     return this.rankings.getGlobalRanking();
+  });
+  readonly podium = computed(() => this.standings().slice(0, 3));
+  readonly tier = computed(() => {
+    this.rankings.entries();
+    return this.rankings.getTier();
+  });
+  readonly rank = computed(() => {
+    this.rankings.entries();
+    return this.rankings.calculateRank();
   });
 
   showBoard(board: RankingBoard): void {

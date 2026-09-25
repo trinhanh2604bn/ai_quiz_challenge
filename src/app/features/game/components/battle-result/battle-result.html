@@ -1,17 +1,68 @@
-<section class="screen">
-  <div class="panel result">
-    <p class="eyebrow">Two players</p>
-    <h1>Battle complete</h1>
+<section class="battle-result">
+  <div class="stage">
+    <header class="hero" [class.has-winner]="!!winner()" [class.is-draw]="!!session() && !winner()">
+      @if (winner()) {
+        <div class="sparkles" aria-hidden="true">
+          <span class="sparkle sparkle-a"></span>
+          <span class="sparkle sparkle-b"></span>
+          <span class="sparkle sparkle-c"></span>
+        </div>
+      }
+
+      <img
+        class="mascot"
+        [src]="winner() ? celebrateSrc : idleSrc"
+        alt=""
+      />
+
+      <div class="hero-copy">
+        <p class="eyebrow">Two players</p>
+        <h1>
+          Battle Complete!
+          <span class="sr-only">Battle complete</span>
+        </h1>
+        @if (session()) {
+          <p class="outcome" role="status" [class.is-draw]="!winner()">
+            @if (winner(); as currentWinner) {
+              <span class="sr-only">{{ outcome() }}</span>
+              <span class="headline" aria-hidden="true">{{ currentWinner.name }} Wins!</span>
+            } @else {
+              <span class="headline">{{ outcome() }}</span>
+            }
+          </p>
+        }
+      </div>
+
+      @if (winner()) {
+        <img class="hero-trophy" [src]="trophySrc" alt="" />
+      }
+    </header>
+
     @if (session(); as session) {
-      <p class="outcome" role="status">{{ outcome() }}</p>
-      <ul class="scores">
+      <div class="duel" [class.is-draw]="!winner()">
         @for (player of session.players; track player.id) {
-          <li [class.is-winner]="winner()?.id === player.id">
-            <h2>{{ player.name }}</h2>
+          @if ($index === 1) {
+            <p class="vs" aria-hidden="true">VS</p>
+          }
+          <article
+            class="player"
+            [class.is-winner]="winner()?.id === player.id"
+            [attr.data-tone]="$index === 0 ? 'pink' : 'blue'"
+          >
+            @if (winner()?.id === player.id) {
+              <img class="crown" [src]="trophySrc" alt="" />
+            }
+            <div class="identity">
+              <span class="avatar" aria-hidden="true">{{ avatarGlyph(player) }}</span>
+              <h2>{{ player.name }}</h2>
+            </div>
             <dl class="stats">
-              <div>
+              <div class="score-stat">
                 <dt>Score</dt>
-                <dd>{{ player.score }}</dd>
+                <dd>
+                  <span class="score-value">{{ player.score }}</span>
+                  <span class="pts">PTS</span>
+                </dd>
               </div>
               <div>
                 <dt>Correct answers</dt>
@@ -26,26 +77,30 @@
                 <dd>{{ player.bestStreak }}</dd>
               </div>
             </dl>
-          </li>
+          </article>
         }
-      </ul>
+      </div>
     }
 
     <div class="actions">
-      <button type="button" class="btn btn-primary" (click)="playAgain()">Play again</button>
-      <button type="button" class="btn btn-secondary" (click)="exitBattle()">Exit</button>
+      <button type="button" class="game-action game-action-primary" (click)="playAgain()">
+        Play again
+      </button>
       <button
         type="button"
-        class="btn btn-secondary"
+        class="game-action"
         [attr.aria-expanded]="leaderboardOpen()"
         (click)="toggleLeaderboard()"
       >
         Leaderboard
       </button>
+      <button type="button" class="game-action" (click)="exitBattle()">Exit</button>
     </div>
-  </div>
 
-  @if (leaderboardOpen()) {
-    <app-leaderboard [entries]="entries()" />
-  }
+    @if (leaderboardOpen()) {
+      <div class="board-wrap">
+        <app-leaderboard [entries]="entries()" appearance="ranking" />
+      </div>
+    }
+  </div>
 </section>

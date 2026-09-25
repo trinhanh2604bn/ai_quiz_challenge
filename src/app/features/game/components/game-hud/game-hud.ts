@@ -17,4 +17,9 @@ export class GameHudComponent {
   readonly correctCount = input<number | null>(null);
   readonly questionLabel = input('');
   readonly detail = input('');
+  readonly level = input<number | null>(null);
+  readonly avatar = input('');
+  readonly xpPercent = input<number | null>(null);
+  readonly xpLabel = input('');
+  readonly answerTotal = input<number | null>(null);
 }

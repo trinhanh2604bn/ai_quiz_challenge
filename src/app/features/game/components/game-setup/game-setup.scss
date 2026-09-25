@@ -1,1 +1,40 @@
-/* Layout shared with battle setup lives in styles/setup-screen.scss. */
+.layout {
+  display: grid;
+  gap: 0.2rem;
+  align-items: end;
+  min-width: 0;
+}
+
+.mascot {
+  width: min(7.5rem, 38vw);
+  margin: 0 auto -0.15rem;
+  pointer-events: none;
+  filter: drop-shadow(0 16px 18px rgba(59, 7, 100, 0.38));
+  animation: mascot-float 5.4s ease-in-out infinite;
+}
+
+@keyframes mascot-float {
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(11rem, 17rem) minmax(0, 48rem);
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .mascot {
+    width: min(18rem, 100%);
+    margin: 0;
+    justify-self: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot {
+    animation: none;
+  }
+}

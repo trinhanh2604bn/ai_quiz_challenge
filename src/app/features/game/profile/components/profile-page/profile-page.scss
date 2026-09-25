@@ -1,100 +1,268 @@
+@use '../../../styles/hub-theme' as hub;
+
 :host {
-  display: block;
-  min-height: 100vh;
+  @include hub.page-host;
 }
 
-app-game-background {
-  display: block;
-  min-height: 100vh;
-}
+@include hub.back-button;
 
 .profile {
-  width: min(52rem, 100%);
-  margin: 0 auto;
-  padding: var(--space-medium) var(--space-medium) var(--space-large);
+  @include hub.shell;
 }
 
-.hero {
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.titles {
   min-width: 0;
+}
+
+.kicker {
+  margin: 0 0 0.15rem;
+  color: #7c3aed;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 h1 {
-  margin: 0;
+  @include hub.title;
 }
 
 h2 {
-  margin: var(--space-large) 0 var(--space-small);
-  font-size: 1.15rem;
+  margin: 1.15rem 0 0.7rem;
+  color: #3b0764;
+  font-size: 1.2rem;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
-app-game-card {
-  display: block;
+.dashboard {
+  display: grid;
+  gap: 0.75rem;
   min-width: 0;
 }
 
-app-xp-bar {
-  margin-top: var(--space-medium);
+.hero-card {
+  @include hub.glass-panel;
+  min-width: 0;
+  padding: 1rem;
+  animation: hub-rise 460ms ease both;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 79, 216, 0.2), transparent 42%),
+    radial-gradient(circle at 100% 0%, rgba(59, 130, 246, 0.16), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 243, 255, 0.9));
 }
 
-.total {
-  margin: var(--space-small) 0 0;
-  color: var(--muted);
-  font-weight: 700;
+.hero-main {
+  display: grid;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+app-profile-card,
+app-xp-bar,
+.standing {
+  min-width: 0;
 }
 
 .standing {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-small) var(--space-medium);
-  min-width: 0;
-  margin-top: var(--space-medium);
+  gap: 0.45rem 0.7rem;
+}
+
+.current-rank,
+.total,
+.dates {
+  margin: 0;
 }
 
 .current-rank {
-  margin: 0;
+  color: #3b0764;
   font-weight: 800;
+}
+
+.total {
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 79, 216, 0.16), rgba(251, 191, 36, 0.28));
+  color: #6d28d9;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+app-xp-bar {
+  display: block;
+  margin-top: 0.9rem;
+}
+
+.mascot {
+  display: block;
+  width: min(7.5rem, 46%);
+  height: auto;
+  margin-inline: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 14px 16px rgba(59, 7, 100, 0.35));
+  animation: hub-float 5.6s ease-in-out infinite;
 }
 
 .stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-medium);
+  gap: 0.65rem;
   margin: 0;
 }
 
-.stats div {
+.stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.35rem;
   min-width: 0;
+  min-height: 6.4rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 1.35rem;
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 10px 18px rgba(59, 7, 100, 0.22);
+  animation: hub-rise 480ms ease both;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
 }
 
+.stat:nth-child(2) { animation-delay: 40ms; }
+.stat:nth-child(3) { animation-delay: 80ms; }
+.stat:nth-child(4) { animation-delay: 120ms; }
+.stat:nth-child(5) { animation-delay: 160ms; }
+
+.stat:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 16px 26px rgba(59, 7, 100, 0.28);
+}
+
+.stat-pink { background: linear-gradient(145deg, #ff4fd8, #d946ef 55%, #7c3aed); }
+.stat-gold { background: linear-gradient(145deg, #fde68a, #fbbf24 48%, #f59e0b); color: #78350f; }
+.stat-rose { background: linear-gradient(145deg, #fb7185, #e11d48 55%, #9f1239); }
+.stat-magenta { background: linear-gradient(145deg, #f0abfc, #d946ef 50%, #7c3aed); }
+.stat-cyan { background: linear-gradient(145deg, #67e8f9, #22d3ee 42%, #3b82f6); color: #083344; }
+.stat-purple { background: linear-gradient(145deg, #a78bfa, #7c3aed 55%, #4c1d95); }
+.stat-teal { background: linear-gradient(145deg, #5eead4, #14b8a6 50%, #0f766e); }
+.stat-amber { background: linear-gradient(145deg, #fdba74, #f97316 48%, #c2410c); }
+.stat-orange { background: linear-gradient(145deg, #fda4af, #fb7185 40%, #db2777); }
+.stat-blue { background: linear-gradient(145deg, #93c5fd, #3b82f6 50%, #6d28d9); }
+
 dt {
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 700;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  color: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+dt img,
+.mark {
+  flex: 0 0 auto;
+  width: 1.85rem;
+  height: 1.85rem;
+  object-fit: contain;
+}
+
+.mark {
+  display: block;
+  padding: 0.28rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  color: inherit;
 }
 
 dd {
-  margin: 0.15rem 0 0;
+  margin: 0;
   overflow-wrap: anywhere;
-  font-size: 1.15rem;
+  font-size: clamp(1.2rem, 2.4vw, 1.55rem);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+.stat-blue dd {
+  font-size: clamp(0.92rem, 2vw, 1.15rem);
 }
 
 .dates {
-  margin: var(--space-medium) 0 0;
-  color: var(--muted);
+  margin-top: 0.9rem;
+  color: #5b21b6;
   font-size: 0.85rem;
+  font-weight: 700;
 }
 
-.profile > app-game-button {
-  display: flex;
-  width: min(16rem, 100%);
-  margin-top: var(--space-medium);
+@media (max-width: 767px) {
+  app-game-button.back {
+    width: 100%;
+  }
 }
 
 @media (min-width: 768px) {
+  .hero-main {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .standing {
+    justify-content: flex-end;
+  }
+
   .stats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard {
+    grid-template-columns: minmax(0, 1fr) 12rem;
+    align-items: end;
+  }
+
+  .mascot {
+    width: 12rem;
+    margin: 0;
+    justify-self: center;
+  }
+}
+
+@media (min-width: 1280px) {
+  .stats {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card,
+  .stat,
+  .mascot {
+    animation: none;
+  }
+
+  .stat:hover {
+    transform: none;
   }
 }

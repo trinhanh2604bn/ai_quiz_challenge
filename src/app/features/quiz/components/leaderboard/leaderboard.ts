@@ -11,6 +11,7 @@ import { LeaderboardEntry } from '../../models/leaderboard-entry.model';
 })
 export class LeaderboardComponent {
   readonly entries = input.required<readonly LeaderboardEntry[]>();
+  readonly appearance = input<'classic' | 'ranking' | 'modal'>('classic');
 
   formatCompletedAt(completedAt: number): string {
     return new Date(completedAt).toLocaleString(undefined, {

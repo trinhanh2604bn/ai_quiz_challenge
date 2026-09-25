@@ -1,167 +1,263 @@
 :host {
   display: block;
-  min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  overflow-x: clip;
+  color: #3b0764;
+  background-color: #241046;
 }
 
-app-game-background {
-  display: block;
-  min-height: 100vh;
+:host::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url("/game/home/home-background.png") center top / cover no-repeat fixed;
 }
 
-.setup {
-  display: grid;
-  gap: var(--space-medium);
-  width: min(52rem, 100%);
+.setup,
+app-setup-toolbar {
+  position: relative;
+  z-index: 1;
+}
+
+.stage {
+  width: min(72rem, calc(100% - 1.25rem));
   margin: 0 auto;
-  padding: var(--space-medium) var(--space-medium) var(--space-large);
-  animation: stage-enter 420ms ease both;
+  padding: 0.15rem 0 1.75rem;
+  animation: stage-enter 460ms ease both;
+}
+
+.brand {
+  margin: 0 0 0.35rem;
+}
+
+.logo,
+.mascot,
+.duel {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+.logo {
+  width: min(100%, 18rem);
+  margin: 0 auto;
+  filter: drop-shadow(0 10px 14px rgba(59, 7, 100, 0.35));
+  animation: logo-float 4.8s ease-in-out infinite;
+}
+
+.glass {
+  display: grid;
+  gap: 0.7rem;
+  min-width: 0;
+  padding: 0.95rem 0.8rem 0.9rem;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 1.7rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(243, 232, 255, 0.74));
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 0 0 1px rgba(232, 121, 249, 0.28),
+    0 18px 40px rgba(76, 29, 149, 0.28),
+    0 0 32px rgba(217, 70, 239, 0.2);
+  backdrop-filter: blur(14px);
+  animation: panel-enter 520ms ease both;
+}
+
+.intro {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0;
+  padding: 0.22rem 0.7rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f472b6, #c026d3);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 6px 14px rgba(192, 38, 211, 0.35);
+}
+
+.badge svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: 0 0 auto;
 }
 
 h1 {
   margin: 0;
+  color: #4c1d95;
+  font-size: clamp(1.65rem, 4.4vw, 2.45rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+h1 .pop {
+  color: #f59e0b;
 }
 
 .lead,
-.hint {
-  margin: var(--space-small) 0 0;
-  color: var(--muted);
+.hint,
+.notice {
+  margin: 0;
 }
 
 .lead {
   max-width: 40rem;
+  color: #6d28d9;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
-.selector {
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
   margin: 0;
   padding: 0;
-  border: 0;
-  min-inline-size: 0;
+  list-style: none;
 }
 
-.selector legend {
-  margin-bottom: var(--space-small);
-  padding: 0;
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.facts-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.choices {
+.facts li {
   display: grid;
-  gap: var(--space-small);
+  justify-items: center;
+  align-content: center;
+  gap: 0.08rem;
   min-width: 0;
-}
-
-.choice {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  min-width: 0;
-  min-height: 4.25rem;
-  padding: 0.8rem 0.9rem;
-  border: 2px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--card);
-  color: var(--text);
-  font: inherit;
-  font-weight: 800;
-  text-align: left;
-  overflow-wrap: anywhere;
-  cursor: pointer;
-  transition:
-    transform 180ms ease,
-    box-shadow 180ms ease,
-    border-color 180ms ease;
-}
-
-.choice::before {
-  content: "";
-  flex: 0 0 2.4rem;
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 0.75rem;
-  background: var(--accent-soft);
-}
-
-.choice[data-choice='Machine Learning']::before {
-  background: #dbeafe;
-}
-
-.choice[data-choice='Deep Learning']::before {
-  background: #ede9fe;
-}
-
-.choice[data-choice='Generative AI']::before {
-  background: #fce7f3;
-}
-
-.choice[data-choice='Prompt Engineering']::before {
-  background: #ffedd5;
-}
-
-.choice[data-choice='Easy']::before {
-  background: #d1fae5;
-}
-
-.choice[data-choice='Medium']::before {
-  background: #fef3c7;
-}
-
-.choice[data-choice='Hard']::before {
-  background: #fee2e2;
-}
-
-.choice:hover:not(.is-selected) {
-  border-color: var(--primary);
-  transform: translateY(-2px);
-}
-
-.choice.is-selected {
-  border-color: var(--primary);
-  background: var(--accent-soft);
-  color: var(--primary);
+  min-height: 4.5rem;
+  padding: 0.4rem 0.25rem;
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.78);
   box-shadow:
-    0 0 0 3px var(--accent-ring),
-    0 0 22px color-mix(in srgb, var(--primary) 42%, transparent);
-  transform: scale(1.03);
-  animation: choice-select 220ms ease;
-}
-
-.difficulties {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.difficulties .choice {
-  justify-content: center;
-  padding: 0.7rem 0.35rem;
-  font-size: 0.92rem;
+    inset 0 1px 0 #fff,
+    0 6px 14px rgba(76, 29, 149, 0.08);
   text-align: center;
 }
 
-.difficulties .choice::before {
-  display: none;
+.fact-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #c026d3;
+}
+
+.fact-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.fact-title,
+.fact-note {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.fact-title {
+  color: #4c1d95;
+  font-size: 0.76rem;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.fact-note {
+  color: #7c3aed;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.hint,
+.notice {
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.85rem;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.hint {
+  background: rgba(255, 255, 255, 0.62);
+  color: #6d28d9;
 }
 
 .notice {
-  margin: 0;
-  padding: 0.85rem var(--space-medium);
-  border-radius: var(--radius-sm);
-  background: var(--danger-soft);
-  color: var(--danger);
-  font-weight: 700;
+  background: #ffe4e6;
+  color: #9f1239;
 }
 
-.actions {
-  display: grid;
-  gap: var(--space-small);
-  min-width: 0;
-}
-
-.actions app-game-button {
-  display: flex;
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
   width: 100%;
+  min-height: 3.35rem;
+  padding: 0.75rem 1.1rem;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff4fd8 0%, #d946ef 46%, #7c3aed 100%);
+  color: #fff;
+  font: inherit;
+  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 12px 24px rgba(217, 70, 239, 0.45);
+  transition:
+    transform 140ms ease,
+    filter 140ms ease;
+}
+
+.cta svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
+}
+
+.cta:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+}
+
+.cta:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+}
+
+.cta:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  filter: saturate(0.75);
+  box-shadow: none;
+}
+
+.cta:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 3px;
+}
+
+app-challenge-picker {
+  display: block;
   min-width: 0;
 }
 
@@ -177,61 +273,49 @@ h1 {
   }
 }
 
-@keyframes choice-select {
+@keyframes panel-enter {
   from {
-    transform: scale(0.97);
+    opacity: 0;
+    transform: translateY(16px);
   }
 
   to {
-    transform: scale(1.03);
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes logo-float {
+  50% {
+    transform: translateY(-6px);
   }
 }
 
 @media (min-width: 768px) {
-  .setup {
-    padding-top: var(--space-large);
+  .logo {
+    width: min(100%, 24rem);
   }
 
-  .choices:not(.difficulties) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .glass {
+    padding: 1.15rem 1.15rem 1.05rem;
   }
 
-  .difficulties .choice {
-    padding: 0.8rem 0.9rem;
-    font-size: inherit;
-  }
-
-  .difficulties .choice::before {
-    display: block;
-  }
-
-  .actions {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .actions app-game-button:first-child {
-    width: auto;
-    min-width: 7.5rem;
-  }
-}
-
-@media (min-width: 1280px) {
-  .choices:not(.difficulties) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .fact-title {
+    font-size: 0.86rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .setup,
-  .choice,
-  .choice.is-selected {
+  .stage,
+  .glass,
+  .logo,
+  .cta {
     animation: none;
     transition: none;
   }
 
-  .choice:hover,
-  .choice.is-selected,
-  .choice:active {
+  .cta:hover,
+  .cta:active {
     transform: none;
   }
 }

@@ -1,61 +1,130 @@
-<section class="screen">
-  <header class="panel hero">
-    <p class="eyebrow">Session complete</p>
-    <h1>Quiz completed</h1>
+<section class="result">
+  <div class="stage">
+    <header class="hero" [class.is-perfect]="perfect()">
+      @if (perfect()) {
+        <div class="sparkles" aria-hidden="true">
+          <span class="sparkle sparkle-a"></span>
+          <span class="sparkle sparkle-b"></span>
+          <span class="sparkle sparkle-c"></span>
+          <span class="sparkle sparkle-d"></span>
+        </div>
+      }
+
+      <div class="hero-layout">
+        <img class="mascot" [src]="mascotSrc" alt="" />
+
+        <div class="hero-copy">
+          <p class="eyebrow">Session complete</p>
+          <h1>Quiz Completed!</h1>
+          @if (result(); as quizResult) {
+            <p class="score-hero">
+              <span class="score-value">{{ quizResult.score }}</span>
+              <span class="score-label">points</span>
+            </p>
+            <ul class="hero-chips">
+              <li>{{ quizResult.accuracy }}% accuracy</li>
+              <li>{{ quizResult.correctCount }} / {{ quizResult.totalQuestions }} correct</li>
+              <li>Best streak {{ quizResult.maxStreak }}</li>
+            </ul>
+          }
+          @if (perfect()) {
+            <p class="perfect-label">Perfect score</p>
+          }
+        </div>
+
+        @if (perfect()) {
+          <img class="trophy" [src]="trophySrc" alt="" />
+        }
+      </div>
+
+      @if (result()) {
+        <app-progress-bar [progress]="progress()" />
+      }
+    </header>
+
     @if (result(); as quizResult) {
-      <p class="score-hero">
-        <span class="score-value">{{ quizResult.score }}</span>
-        <span class="score-label">points</span>
-      </p>
-      <p class="summary">You answered {{ quizResult.totalQuestions }} questions.</p>
-    }
-  </header>
+      <dl class="metrics">
+        <div class="metric metric-score">
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path
+                d="M12 3.2 14.4 8l5.3.5-4 3.6 1.2 5.2L12 14.8 7.1 17.3 8.3 12 4.3 8.5 9.6 8 12 3.2Z"
+              />
+            </svg>
+          </span>
+          <dt>Score</dt>
+          <dd>{{ quizResult.score }}</dd>
+        </div>
+        <div class="metric metric-correct">
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M9.2 16.2 4.8 11.8l1.6-1.6 2.8 2.8 8.4-8.4 1.6 1.6-10 10Z" />
+            </svg>
+          </span>
+          <dt>Correct answers</dt>
+          <dd>{{ quizResult.correctCount }} / {{ quizResult.totalQuestions }}</dd>
+        </div>
+        <div class="metric metric-accuracy">
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path
+                fill-rule="evenodd"
+                d="M12 3.2a8.8 8.8 0 1 0 .1 17.6 8.8 8.8 0 0 0-.1-17.6Zm0 3.6a5.2 5.2 0 1 1-.1 10.4 5.2 5.2 0 0 1 .1-10.4Zm0 2.5a2.7 2.7 0 1 0 .1 5.4 2.7 2.7 0 0 0-.1-5.4Z"
+              />
+            </svg>
+          </span>
+          <dt>Accuracy</dt>
+          <dd>{{ quizResult.accuracy }}%</dd>
+        </div>
+        <div class="metric metric-streak">
+          <span class="metric-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path
+                d="M12.8 2.5c.4 2.8-.6 4.4-2.1 6.1-1.2 1.3-2.4 2.6-2.2 4.6.2 1.6 1.2 2.8 2.6 3.4-1.1-2.2-.2-3.7 1.1-5.1 1.4 2.7 4.8 3.6 4.8 7.1 0 3.2-2.6 5.4-6 5.4s-6.2-2.4-6.2-6.1c0-3.4 2.1-5.6 3.8-7.6 1.6-1.9 2.6-3.4 2.2-5.8.8.4 1.5 1.1 2 2Z"
+              />
+            </svg>
+          </span>
+          <dt>Best streak</dt>
+          <dd>{{ quizResult.maxStreak }}</dd>
+        </div>
+      </dl>
 
-  @if (result(); as quizResult) {
-    <app-progress-bar [progress]="progress()" />
-    <dl class="stat-grid">
-      <div>
-        <dt>Score</dt>
-        <dd>{{ quizResult.score }}</dd>
-      </div>
-      <div>
-        <dt>Correct answers</dt>
-        <dd>{{ quizResult.correctCount }} / {{ quizResult.totalQuestions }}</dd>
-      </div>
-      <div>
-        <dt>Accuracy</dt>
-        <dd>{{ quizResult.accuracy }}%</dd>
-      </div>
-      <div>
-        <dt>Best streak</dt>
-        <dd>{{ quizResult.maxStreak }}</dd>
-      </div>
-    </dl>
-    @if (report(); as performance) {
-      <app-performance-dashboard [report]="performance" />
-    }
-    <form class="panel save-form" (submit)="saveScore($event)">
-      <label for="player-name">Name</label>
-      <div class="save-row">
-        <input
-          id="player-name"
-          type="text"
-          name="playerName"
-          autocomplete="nickname"
-          [value]="playerName()"
-          (input)="updateName($event)"
-          [disabled]="saved()"
-        />
-        <button type="submit" class="btn btn-primary" [disabled]="!canSave()">
-          Save to leaderboard
-        </button>
-      </div>
-    </form>
-    @if (saved()) {
-      <p class="saved" role="status">Score saved.</p>
-    }
-  }
+      <div class="details">
+        @if (report(); as performance) {
+          <app-performance-dashboard [report]="performance" />
+        }
 
-  <app-leaderboard [entries]="entries()" />
-  <a class="btn btn-secondary" routerLink="/">Back to start</a>
+        <div class="side">
+          <form class="save-panel" (submit)="saveScore($event)">
+            <h2 id="save-heading">Save to leaderboard</h2>
+            <label for="player-name">Name</label>
+            <div class="save-row">
+              <input
+                id="player-name"
+                type="text"
+                name="playerName"
+                autocomplete="nickname"
+                [value]="playerName()"
+                (input)="updateName($event)"
+                [disabled]="saved()"
+              />
+              <button type="submit" class="save-btn" [disabled]="!canSave()">
+                Save to Leaderboard
+              </button>
+            </div>
+          </form>
+          @if (saved()) {
+            <p class="saved" role="status">Score saved.</p>
+          }
+          <app-leaderboard [entries]="entries()" appearance="ranking" />
+        </div>
+      </div>
+    } @else {
+      <app-leaderboard [entries]="entries()" appearance="ranking" />
+    }
+
+    <div class="actions">
+      <a class="lobby-link" routerLink="/">Back to Lobby</a>
+    </div>
+  </div>
 </section>

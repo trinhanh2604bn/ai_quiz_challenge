@@ -32,6 +32,16 @@ export class ResultScreenComponent implements OnInit {
   readonly entries = this.leaderboard.entries;
   readonly playerName = signal('');
   readonly saved = signal(false);
+  readonly mascotSrc = 'game/home/mascot-celebrate.png';
+  readonly trophySrc = 'game/home/icon-achievements.png';
+  readonly perfect = computed(() => {
+    const quizResult = this.result();
+    return (
+      quizResult !== null &&
+      quizResult.totalQuestions > 0 &&
+      quizResult.correctCount === quizResult.totalQuestions
+    );
+  });
   readonly canSave = computed(
     () => this.playerName().trim().length > 0 && !this.saved() && this.result() !== null,
   );

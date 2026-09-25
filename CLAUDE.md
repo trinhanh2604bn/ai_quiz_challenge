@@ -803,13 +803,23 @@ logic stay unchanged.
 
 ## Main Menu and Setup Redesign
 
-The lobby, single-player setup, and battle setup use the shared
-background, cards, and buttons. Solo Quest opens `/setup`. Battle Arena
-opens `/battle/setup`. Category and difficulty choices are cards with an
+Single-player setup and battle setup use the shared background, cards,
+and buttons. Solo Quest opens `/setup`. Battle Arena opens `/battle/setup`. Category and difficulty choices are cards with an
 active border, glow, and scale. Battle setup shows player cards and a VS
 mark. Entrance, hover, selection, and button motion stop under
 `prefers-reduced-motion`. Start and battle-creation behavior stay the
 same.
+
+## Homepage launcher
+
+The lobby at `/` is a game launcher. It uses illustrated files in
+`public/game/home/` for the background, logo, slogan, waving mascot,
+mode art, and utility icons. Player nickname, level, experience, and the
+sound setting stay live. Solo Quest, Battle Arena, profile, achievements,
+ranking, the leaderboard dialog, settings, and the sound switch call the
+existing lobby methods. Setup, quiz, battle, result, profile, ranking,
+and achievement screens keep their own layouts. The source pack in
+`public/Assets/` is not shown as a screenshot.
 
 ## Achievements
 

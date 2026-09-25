@@ -2,13 +2,12 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { GameBackgroundComponent } from '../../../components/game-background/game-background';
 import { GameButtonComponent } from '../../../components/game-button/game-button';
-import { GameCardComponent } from '../../../components/game-card/game-card';
 import { AchievementService } from '../../services/achievement.service';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-achievement-screen',
-  imports: [GameBackgroundComponent, GameButtonComponent, GameCardComponent],
+  imports: [GameBackgroundComponent, GameButtonComponent],
   templateUrl: './achievement-screen.html',
   styleUrl: './achievement-screen.scss',
 })

@@ -1,43 +1,84 @@
-<section class="dashboard panel" aria-labelledby="performance-heading">
-  <p class="eyebrow">Analytics</p>
-  <h2 id="performance-heading">Performance dashboard</h2>
+<section class="dashboard" aria-labelledby="performance-heading">
+  <header class="dash-head">
+    <p class="eyebrow">Analytics</p>
+    <h2 id="performance-heading">Performance dashboard</h2>
+  </header>
 
-  <h3>Overall</h3>
-  <dl class="cards">
-    <div class="card">
-      <dt>Score</dt>
-      <dd>{{ report().finalScore }}</dd>
-    </div>
-    <div class="card">
-      <dt>Accuracy</dt>
-      <dd>{{ report().accuracy }}%</dd>
-      <p class="card-note">{{ report().correctAnswers }} / {{ report().totalQuestions }} correct</p>
-    </div>
-  </dl>
+  <div class="panel-grid">
+    <section class="panel-block" aria-labelledby="overall-heading">
+      <h3 id="overall-heading">Overall</h3>
+      <dl class="cards">
+        <div class="card card-score">
+          <dt>Score</dt>
+          <dd>{{ report().finalScore }}</dd>
+        </div>
+        <div class="card card-accuracy">
+          <dt>Accuracy</dt>
+          <dd>{{ report().accuracy }}%</dd>
+          <p class="card-note">{{ report().correctAnswers }} / {{ report().totalQuestions }} correct</p>
+        </div>
+      </dl>
+    </section>
 
-  <h3>Statistics</h3>
-  <dl class="cards">
-    <div class="card">
-      <dt>Average response time</dt>
-      <dd>{{ formatResponseTime(report().averageResponseTime) }}</dd>
-      <p class="card-note">{{ report().averageResponseTime }} ms</p>
-    </div>
-    <div class="card">
-      <dt>Best streak</dt>
-      <dd>{{ report().bestStreak }}</dd>
-    </div>
-  </dl>
+    <section class="panel-block" aria-labelledby="stats-heading">
+      <h3 id="stats-heading">Statistics</h3>
+      <dl class="cards">
+        <div class="card card-time">
+          <dt>Average response time</dt>
+          <dd>{{ formatResponseTime(report().averageResponseTime) }}</dd>
+          <p class="card-note">{{ report().averageResponseTime }} ms</p>
+        </div>
+        <div class="card card-streak">
+          <dt>Best streak</dt>
+          <dd>{{ report().bestStreak }}</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
 
-  <h3>Category performance</h3>
-  @if (report().categoryPerformance.length === 0) {
-    <p class="empty">No category data for this session.</p>
-  } @else {
+  <section class="panel-block" aria-labelledby="category-heading">
+    <h3 id="category-heading">Category performance</h3>
+    @if (report().categoryPerformance.length === 0) {
+      <p class="empty">No category data for this session.</p>
+    } @else {
+      <div class="groups">
+        @for (group of report().categoryPerformance; track group.label) {
+          <div class="metric">
+            <div class="metric-meta">
+              <span class="metric-label">{{ group.label }}</span>
+              <span class="badge" [class.is-idle]="group.total === 0">
+                @if (group.total === 0) {
+                  Not attempted
+                } @else {
+                  {{ group.correct }}/{{ group.total }} · {{ group.accuracy }}%
+                }
+              </span>
+            </div>
+            <div
+              class="track"
+              role="progressbar"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuenow]="group.accuracy"
+              [attr.aria-valuetext]="groupValueText(group)"
+              [attr.aria-label]="group.label + ' accuracy'"
+            >
+              <div class="fill" [style.width.%]="group.accuracy"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="panel-block" aria-labelledby="difficulty-heading">
+    <h3 id="difficulty-heading">Difficulty performance</h3>
     <div class="groups">
-      @for (group of report().categoryPerformance; track group.label) {
+      @for (group of report().difficultyPerformance; track group.label) {
         <div class="metric">
           <div class="metric-meta">
-            <span>{{ group.label }}</span>
-            <span>
+            <span class="metric-label">{{ group.label }}</span>
+            <span class="badge" [class.is-idle]="group.total === 0">
               @if (group.total === 0) {
                 Not attempted
               } @else {
@@ -59,34 +100,5 @@
         </div>
       }
     </div>
-  }
-
-  <h3>Difficulty performance</h3>
-  <div class="groups">
-    @for (group of report().difficultyPerformance; track group.label) {
-      <div class="metric">
-        <div class="metric-meta">
-          <span>{{ group.label }}</span>
-          <span>
-            @if (group.total === 0) {
-              Not attempted
-            } @else {
-              {{ group.correct }}/{{ group.total }} · {{ group.accuracy }}%
-            }
-          </span>
-        </div>
-        <div
-          class="track"
-          role="progressbar"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          [attr.aria-valuenow]="group.accuracy"
-          [attr.aria-valuetext]="groupValueText(group)"
-          [attr.aria-label]="group.label + ' accuracy'"
-        >
-          <div class="fill" [style.width.%]="group.accuracy"></div>
-        </div>
-      </div>
-    }
-  </div>
+  </section>
 </section>

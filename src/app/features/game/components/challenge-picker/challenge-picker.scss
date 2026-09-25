@@ -1,0 +1,323 @@
+:host {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.selector {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.selector legend {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.45rem;
+  padding: 0;
+  color: #6d28d9;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.selector legend svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.diffs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.choice {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.55rem minmax(0, 1fr);
+  gap: 0.45rem;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 4.7rem;
+  padding: 0.55rem 1.55rem 0.55rem 0.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 1.05rem;
+  background: #fff;
+  color: #3b0764;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 8px 16px rgba(76, 29, 149, 0.1);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.choice[data-tone='fundamentals'] {
+  background: linear-gradient(180deg, #fff 0%, #fce7f3 100%);
+}
+
+.choice[data-tone='learning'] {
+  background: linear-gradient(180deg, #fff 0%, #dbeafe 100%);
+}
+
+.choice[data-tone='deep'] {
+  background: linear-gradient(180deg, #fff 0%, #ede9fe 100%);
+}
+
+.choice[data-tone='generative'] {
+  background: linear-gradient(180deg, #fff 0%, #ffedd5 100%);
+}
+
+.choice[data-tone='prompt'] {
+  background: linear-gradient(180deg, #fff 0%, #fef3c7 100%);
+}
+
+.cat-icon {
+  display: grid;
+  place-items: center;
+  width: 2.55rem;
+  height: 2.55rem;
+  border-radius: 0.8rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.choice[data-tone='fundamentals'] .cat-icon {
+  background: linear-gradient(160deg, #f9a8d4, #c4b5fd);
+}
+
+.choice[data-tone='learning'] .cat-icon {
+  background: linear-gradient(160deg, #93c5fd, #67e8f9);
+}
+
+.choice[data-tone='deep'] .cat-icon {
+  background: linear-gradient(160deg, #c4b5fd, #818cf8);
+}
+
+.choice[data-tone='generative'] .cat-icon {
+  background: linear-gradient(160deg, #fda4af, #fdba74);
+}
+
+.choice[data-tone='prompt'] .cat-icon {
+  background: linear-gradient(160deg, #fde68a, #fbbf24);
+}
+
+.cat-icon svg,
+.diff-badge svg,
+.check svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cat-copy {
+  display: grid;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.cat-name,
+.diff-name {
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.cat-name {
+  font-size: 0.82rem;
+}
+
+.cat-blurb,
+.diff-blurb {
+  color: #6d28d9;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.choice:hover:not(.is-selected) {
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 12px 18px rgba(76, 29, 149, 0.16);
+}
+
+.choice.is-selected:not(.diff) {
+  border-color: #d946ef;
+  background: linear-gradient(180deg, #fff7fb, #fbcfe8);
+  box-shadow:
+    0 0 0 3px rgba(217, 70, 239, 0.55),
+    0 0 26px rgba(217, 70, 239, 0.72);
+  transform: scale(1.03);
+}
+
+.choice:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.choice:focus-visible {
+  outline: 3px solid #fbbf24;
+  outline-offset: 3px;
+}
+
+.check {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  display: grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f472b6, #c026d3);
+  box-shadow: 0 0 10px rgba(217, 70, 239, 0.7);
+}
+
+.diff {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.12rem;
+  min-height: 5.6rem;
+  padding: 0.55rem 0.3rem 0.6rem;
+  text-align: center;
+}
+
+.diff-badge {
+  display: grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.diff-name {
+  font-size: 0.92rem;
+}
+
+.diff[data-choice='Easy'] {
+  border-color: #6ee7b7;
+  background: linear-gradient(180deg, #ecfdf5, #6ee7b7);
+  color: #065f46;
+}
+
+.diff[data-choice='Easy'] .diff-blurb {
+  color: #047857;
+}
+
+.diff[data-choice='Easy'] .diff-badge {
+  background: #059669;
+}
+
+.diff[data-choice='Medium'] {
+  border-color: #fcd34d;
+  background: linear-gradient(180deg, #fffbeb, #fbbf24);
+  color: #92400e;
+}
+
+.diff[data-choice='Medium'] .diff-blurb {
+  color: #b45309;
+}
+
+.diff[data-choice='Medium'] .diff-badge {
+  background: #d97706;
+}
+
+.diff[data-choice='Hard'] {
+  border-color: #fb7185;
+  background: linear-gradient(180deg, #fff1f2, #fb7185);
+  color: #9f1239;
+}
+
+.diff[data-choice='Hard'] .diff-blurb {
+  color: #be123c;
+}
+
+.diff[data-choice='Hard'] .diff-badge {
+  background: #e11d48;
+}
+
+.diff.is-selected[data-choice='Easy'] {
+  border-color: #059669;
+  box-shadow:
+    0 0 0 3px rgba(16, 185, 129, 0.45),
+    0 0 22px rgba(16, 185, 129, 0.55);
+}
+
+.diff.is-selected[data-choice='Medium'] {
+  border-color: #d97706;
+  box-shadow:
+    0 0 0 3px rgba(245, 158, 11, 0.5),
+    0 0 22px rgba(245, 158, 11, 0.55);
+}
+
+.diff.is-selected[data-choice='Hard'] {
+  border-color: #e11d48;
+  box-shadow:
+    0 0 0 3px rgba(244, 63, 94, 0.45),
+    0 0 22px rgba(244, 63, 94, 0.55);
+}
+
+.diff.is-selected {
+  transform: scale(1.03);
+}
+
+.diff .check {
+  background: currentColor;
+}
+
+@container (max-width: 34rem) {
+  .choice:not(.diff) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    min-height: 6.5rem;
+    padding: 0.55rem 1.35rem 0.6rem 0.55rem;
+  }
+
+  .cat-copy {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .cat-name {
+    font-size: 0.8rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .choices:not(.diffs) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cat-name {
+    font-size: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .choice {
+    transition: none;
+  }
+
+  .choice:hover,
+  .choice.is-selected,
+  .choice:active {
+    transform: none;
+  }
+}

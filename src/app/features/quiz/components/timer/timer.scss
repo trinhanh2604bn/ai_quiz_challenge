@@ -8,14 +8,15 @@
   display: grid;
   justify-items: center;
   gap: 0.15rem;
-  width: 5.5rem;
+  width: var(--timer-width, 5.5rem);
   max-width: 100%;
 }
 
 .ring {
   position: relative;
-  width: 4.5rem;
-  height: 4.5rem;
+  width: var(--ring-size, 4.5rem);
+  height: var(--ring-size, 4.5rem);
+  filter: drop-shadow(0 8px 10px rgba(124, 58, 237, 0.28));
 }
 
 svg {
@@ -31,11 +32,11 @@ circle {
 }
 
 .track {
-  stroke: color-mix(in srgb, var(--primary) 14%, var(--card));
+  stroke: rgba(255, 255, 255, 0.55);
 }
 
 .progress {
-  stroke: var(--primary);
+  stroke: #c026d3;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.25s linear;
 }
@@ -45,8 +46,8 @@ strong {
   inset: 0;
   display: grid;
   place-items: center;
-  color: var(--text);
-  font-size: 1rem;
+  color: #4c1d95;
+  font-size: 1.05rem;
   font-variant-numeric: tabular-nums;
 }
 

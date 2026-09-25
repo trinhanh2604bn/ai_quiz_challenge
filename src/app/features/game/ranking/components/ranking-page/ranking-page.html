@@ -1,16 +1,25 @@
-<app-game-background>
+<app-game-background scene="home">
   <section class="ranking" aria-labelledby="ranking-title">
-    <header class="hero">
-      <p class="eyebrow">Competition</p>
-      <h1 id="ranking-title" class="game-heading">Ranking</h1>
-      <p class="game-body lead">
-        Global, season, and category standings from finished matches.
-      </p>
+    <header class="page-head">
+      <div class="titles">
+        <p class="kicker">Competition</p>
+        <h1 id="ranking-title">Ranking</h1>
+      </div>
+      <app-game-button class="back" variant="secondary" (click)="goHome()">
+        Back to Lobby
+      </app-game-button>
     </header>
 
-    <app-game-card>
+    <div class="hero-grid">
       <app-season-card [season]="season()" />
-    </app-game-card>
+      <article class="you-card">
+        <p class="you-kicker">Your standing</p>
+        <p class="current-rank">Current rank {{ rank() === null ? 'Unranked' : '#' + rank() }}</p>
+        @if (tier(); as currentTier) {
+          <app-rank-badge [tier]="currentTier" />
+        }
+      </article>
+    </div>
 
     <div class="boards" role="group" aria-label="Ranking type">
       <button type="button" [attr.aria-pressed]="board() === 'global'" (click)="showBoard('global')">
@@ -45,32 +54,44 @@
     }
 
     @if (standings().length === 0) {
-      <app-game-card>
-        <p class="game-body empty">No players ranked yet.</p>
-      </app-game-card>
+      <p class="empty">No players ranked yet.</p>
     } @else {
-      <ol class="board">
+      <section class="podium" [attr.data-count]="podium().length" aria-label="Top three">
+        @for (row of podium(); track row.player) {
+          <article class="podium-slot" [attr.data-place]="row.rank">
+            @if (row.rank === 1) {
+              <img class="crown" src="/game/home/icon-achievements.png" alt="" />
+            }
+            <p class="podium-place">#{{ row.rank }}</p>
+            <span class="avatar" aria-hidden="true">{{ glyphFor(row.avatarId, row.player) }}</span>
+            <p class="podium-name">{{ row.player }}</p>
+            <p class="podium-level">Level {{ row.level }}</p>
+            <p class="podium-score">{{ row.score }}</p>
+            <app-rank-badge [tier]="row.tier" />
+          </article>
+        }
+      </section>
+
+      <ol class="board" aria-label="Ranking list">
         @for (row of standings(); track row.player) {
           <li [class.is-current]="row.player === player()?.nickname">
-            <app-game-card>
-              <article class="row">
-                <span class="place">#{{ row.rank }}</span>
-                <span class="avatar" aria-hidden="true">{{ glyphFor(row.avatarId, row.player) }}</span>
-                <span class="copy">
-                  <span class="name">{{ row.player }}</span>
-                  <span class="meta">
-                    Level {{ row.level }} · {{ row.score }} pts · {{ modeLabel(row.mode) }} ·
-                    {{ row.category }}
-                  </span>
+            <article class="row">
+              <span class="place">#{{ row.rank }}</span>
+              <span class="avatar" aria-hidden="true">{{ glyphFor(row.avatarId, row.player) }}</span>
+              <span class="copy">
+                <span class="name">{{ row.player }}</span>
+                <span class="meta">
+                  <span>Level {{ row.level }}</span>
+                  <span>{{ row.score }} pts</span>
+                  <span>{{ modeLabel(row.mode) }}</span>
+                  <span>{{ row.category }}</span>
                 </span>
-                <app-rank-badge [tier]="row.tier" />
-              </article>
-            </app-game-card>
+              </span>
+              <app-rank-badge [tier]="row.tier" />
+            </article>
           </li>
         }
       </ol>
     }
-
-    <app-game-button variant="secondary" (click)="goHome()">Back to lobby</app-game-button>
   </section>
 </app-game-background>

@@ -1,11 +1,24 @@
-<section class="panel board" aria-label="Leaderboard">
-  <h2 id="leaderboard-heading">Leaderboard</h2>
+<section
+  class="panel board"
+  [class.is-ranking]="appearance() === 'ranking'"
+  [class.is-modal]="appearance() === 'modal'"
+  aria-label="Leaderboard"
+>
+  <h2 id="leaderboard-heading">
+    @if (appearance() === 'modal') {
+      <img class="trophy" src="/game/home/icon-achievements.png" alt="" />
+    }
+    Leaderboard
+  </h2>
   @if (entries().length === 0) {
     <p class="empty">No scores yet. Finish a quiz and save your name to appear here.</p>
   } @else {
     <ol>
       @for (entry of entries(); track $index) {
-        <li>
+        <li
+          [class.is-podium]="(appearance() === 'ranking' || appearance() === 'modal') && $index < 3"
+          [class.is-compact]="appearance() === 'modal' && $index >= 3"
+        >
           <span class="rank">{{ $index + 1 }}</span>
           <span class="who">
             <span class="name-row">

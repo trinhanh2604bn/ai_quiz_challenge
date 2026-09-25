@@ -163,7 +163,7 @@ describe('Ranking UI', () => {
       recordedAt: 1,
     });
 
-    for (const width of [390, 768, 1280]) {
+    for (const width of [390, 768, 1280, 1440]) {
       document.documentElement.style.width = `${width}px`;
       document.body.style.width = `${width}px`;
       const fixture = TestBed.createComponent(RankingPageComponent);

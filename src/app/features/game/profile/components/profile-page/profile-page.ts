@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@a
 import { Router } from '@angular/router';
 import { GameBackgroundComponent } from '../../../components/game-background/game-background';
 import { GameButtonComponent } from '../../../components/game-button/game-button';
-import { GameCardComponent } from '../../../components/game-card/game-card';
 import { AudioService } from '../../../audio/services/audio.service';
 import { RankBadgeComponent } from '../../../ranking/components/rank-badge/rank-badge';
 import { RankingService } from '../../../ranking/services/ranking.service';
@@ -16,7 +15,6 @@ import { XpBarComponent } from '../xp-bar/xp-bar';
   imports: [
     GameBackgroundComponent,
     GameButtonComponent,
-    GameCardComponent,
     ProfileCardComponent,
     XpBarComponent,
     RankBadgeComponent,

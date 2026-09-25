@@ -1,0 +1,42 @@
+<div class="bar">
+  <button type="button" class="back" (click)="goBack()">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M14.5 6.5 9 12l5.5 5.5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    Back
+  </button>
+
+  <div class="tools">
+    <button
+      type="button"
+      class="icon-btn"
+      aria-label="Settings"
+      aria-haspopup="dialog"
+      [attr.aria-expanded]="settingsOpen()"
+      (click)="openSettings($event)"
+    >
+      <img [src]="settingsIconSrc" alt="" />
+    </button>
+    <button
+      type="button"
+      class="icon-btn"
+      role="switch"
+      [attr.aria-checked]="soundEnabled()"
+      [attr.aria-label]="soundLabel()"
+      (click)="toggleSound()"
+    >
+      <img [src]="soundIconSrc()" alt="" />
+    </button>
+  </div>
+</div>
+
+@if (settingsOpen()) {
+  <app-settings-modal (closed)="closeSettings()" />
+}

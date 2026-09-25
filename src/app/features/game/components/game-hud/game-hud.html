@@ -1,10 +1,33 @@
 <section class="hud" aria-label="Match status">
   <div class="identity">
-    <p class="kicker">Player</p>
-    <p class="player">{{ playerName() }}</p>
-    @if (detail()) {
-      <p class="detail">{{ detail() }}</p>
+    @if (avatar()) {
+      <span class="avatar" aria-hidden="true">{{ avatar() }}</span>
     }
+    <div class="identity-copy">
+      <p class="kicker">Player</p>
+      <p class="player">{{ playerName() }}</p>
+      @if (level() !== null) {
+        <p class="level">Level {{ level() }}</p>
+      }
+      @if (detail()) {
+        <p class="detail">{{ detail() }}</p>
+      }
+      @if (xpPercent() !== null) {
+        <div
+          class="xp-track"
+          role="progressbar"
+          aria-label="Experience toward the next level"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="xpPercent()"
+        >
+          <span class="xp-fill" [style.width.%]="xpPercent()"></span>
+        </div>
+        @if (xpLabel()) {
+          <p class="xp-label">{{ xpLabel() }}</p>
+        }
+      }
+    </div>
   </div>
 
   <dl class="stats">
@@ -20,7 +43,12 @@
     @if (correctCount() !== null) {
       <div class="stat">
         <dt>Correct</dt>
-        <dd>{{ correctCount() }}</dd>
+        <dd>
+          {{ correctCount() }}
+          @if (answerTotal() !== null) {
+            <span class="of"> / {{ answerTotal() }}</span>
+          }
+        </dd>
       </div>
     }
   </dl>

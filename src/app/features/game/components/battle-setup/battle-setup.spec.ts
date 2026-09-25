@@ -11,6 +11,11 @@ import { GameSetupComponent } from '../game-setup/game-setup';
 import { BattleSetupComponent } from './battle-setup';
 
 describe('Battle setup', () => {
+  afterEach(() => {
+    document.documentElement.style.width = '';
+    document.body.style.width = '';
+  });
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideRouter(routes)],
@@ -123,6 +128,32 @@ describe('Battle setup', () => {
     expect(TestBed.inject(BattleService).session()).toBeNull();
     fixture.destroy();
   });
+
+  it('stays inside the frame at 390, 768, 1280, and 1440', () => {
+    const longName = 'Pneumonoultramicroscopicsilicovolcanoconiosis';
+
+    for (const width of [390, 768, 1280, 1440]) {
+      setViewport(width);
+
+      const solo = TestBed.createComponent(GameSetupComponent);
+      const soloHost = solo.nativeElement as HTMLElement;
+      soloHost.style.width = '100%';
+      solo.detectChanges();
+      expect(horizontalOverflow(soloHost)).withContext(`solo ${width}px`).toEqual([]);
+      expect(shortControls(soloHost)).withContext(`solo controls ${width}px`).toEqual([]);
+      solo.destroy();
+
+      const battle = TestBed.createComponent(BattleSetupComponent);
+      const battleHost = battle.nativeElement as HTMLElement;
+      battleHost.style.width = '100%';
+      battle.detectChanges();
+      setName(battle, 'player-two', longName);
+      battle.detectChanges();
+      expect(horizontalOverflow(battleHost)).withContext(`battle ${width}px`).toEqual([]);
+      expect(shortControls(battleHost)).withContext(`battle controls ${width}px`).toEqual([]);
+      battle.destroy();
+    }
+  });
 });
 
 function createSetup(): ComponentFixture<BattleSetupComponent> {
@@ -135,7 +166,8 @@ function startButton(fixture: ComponentFixture<unknown>): HTMLButtonElement {
   const buttons = fixture.nativeElement.querySelectorAll('button');
   const button = Array.from(buttons).find(
     (item): item is HTMLButtonElement =>
-      item instanceof HTMLButtonElement && item.textContent?.includes('Start') === true,
+      item instanceof HTMLButtonElement &&
+        item.textContent?.toLowerCase().includes('start') === true,
   );
   if (!button) {
     throw new Error('Missing start button');
@@ -158,9 +190,30 @@ function setName(
 
 function clickChoice(fixture: ComponentFixture<BattleSetupComponent>, label: string): void {
   const buttons: NodeListOf<HTMLButtonElement> = fixture.nativeElement.querySelectorAll('button.choice');
-  const match = Array.from(buttons).find((button) => button.textContent?.trim() === label);
+  const match = Array.from(buttons).find((button) => button.getAttribute('data-choice') === label);
   if (!match) {
     throw new Error(`Missing choice ${label}`);
   }
   match.click();
+}
+
+function setViewport(width: number): void {
+  document.documentElement.style.width = `${width}px`;
+  document.body.style.width = `${width}px`;
+}
+
+function horizontalOverflow(root: HTMLElement): string[] {
+  const nodes = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*'))];
+  return nodes
+    .filter((node) => node.tagName !== 'INPUT' && node.scrollWidth > node.clientWidth + 1)
+    .map((node) => `${node.tagName}.${node.className}: ${node.scrollWidth}>${node.clientWidth}`);
+}
+
+function shortControls(root: HTMLElement): string[] {
+  return Array.from(root.querySelectorAll<HTMLElement>('button, input'))
+    .filter((node) => {
+      const height = node.getBoundingClientRect().height;
+      return height > 0 && height < 44;
+    })
+    .map((node) => `${node.tagName}.${node.className}: ${node.getBoundingClientRect().height}`);
 }

@@ -1,78 +1,127 @@
-<app-game-background>
+<app-game-background scene="home">
   <section class="profile" aria-labelledby="profile-title">
     @if (player(); as profile) {
-      <header class="hero">
-        <p class="eyebrow">Player</p>
-        <h1 id="profile-title" class="game-heading">Profile</h1>
+      <header class="page-head">
+        <div class="titles">
+          <p class="kicker">Player</p>
+          <h1 id="profile-title">Profile</h1>
+        </div>
+        <app-game-button class="back" variant="secondary" (click)="goHome()">
+          Back to Lobby
+        </app-game-button>
       </header>
 
-      <app-game-card>
-        <app-profile-card
-          [nickname]="profile.nickname"
-          [avatarId]="profile.avatarId"
-          [level]="profile.level"
-        />
-        <app-xp-bar [experience]="profile.experience" />
-        <p class="total">{{ profile.experience }} XP total</p>
-        <div class="standing">
-          @if (tier(); as currentTier) {
-            <app-rank-badge [tier]="currentTier" />
-          }
-          <p class="current-rank">Current rank {{ rank() === null ? 'Unranked' : '#' + rank() }}</p>
-        </div>
-      </app-game-card>
+      <div class="dashboard">
+        <article class="hero-card">
+          <div class="hero-main">
+            <app-profile-card
+              [nickname]="profile.nickname"
+              [avatarId]="profile.avatarId"
+              [level]="profile.level"
+            />
+            <div class="standing">
+              @if (tier(); as currentTier) {
+                <app-rank-badge [tier]="currentTier" />
+              }
+              <p class="current-rank">
+                Current rank {{ rank() === null ? 'Unranked' : '#' + rank() }}
+              </p>
+              <p class="total">{{ profile.experience }} XP total</p>
+            </div>
+          </div>
+          <app-xp-bar [experience]="profile.experience" />
+        </article>
+        <img class="mascot" src="/game/home/mascot-wave.png" alt="" />
+      </div>
 
       <h2>Statistics</h2>
-      <app-game-card>
-        <dl class="stats">
-          <div>
-            <dt>Total games</dt>
-            <dd>{{ profile.statistics.totalGames }}</dd>
-          </div>
-          <div>
-            <dt>Wins</dt>
-            <dd>{{ profile.statistics.wins }}</dd>
-          </div>
-          <div>
-            <dt>Losses</dt>
-            <dd>{{ profile.statistics.losses }}</dd>
-          </div>
-          <div>
-            <dt>Solo games</dt>
-            <dd>{{ profile.statistics.soloGames }}</dd>
-          </div>
-          <div>
-            <dt>Battle games</dt>
-            <dd>{{ profile.statistics.battleGames }}</dd>
-          </div>
-          <div>
-            <dt>Questions answered</dt>
-            <dd>{{ profile.statistics.questionsAnswered }}</dd>
-          </div>
-          <div>
-            <dt>Accuracy</dt>
-            <dd>{{ profile.statistics.accuracy }}%</dd>
-          </div>
-          <div>
-            <dt>Best score</dt>
-            <dd>{{ profile.statistics.bestScore }}</dd>
-          </div>
-          <div>
-            <dt>Best streak</dt>
-            <dd>{{ profile.statistics.bestStreak }}</dd>
-          </div>
-          <div>
-            <dt>Favorite category</dt>
-            <dd>{{ profile.statistics.favoriteCategory ?? 'None yet' }}</dd>
-          </div>
-        </dl>
-      </app-game-card>
+      <dl class="stats">
+        <div class="stat stat-pink">
+          <dt>
+            <img src="/game/home/icon-profile.png" alt="" />
+            Games
+          </dt>
+          <dd>{{ profile.statistics.totalGames }}</dd>
+        </div>
+        <div class="stat stat-gold">
+          <dt>
+            <img src="/game/home/icon-achievements.png" alt="" />
+            Wins
+          </dt>
+          <dd>{{ profile.statistics.wins }}</dd>
+        </div>
+        <div class="stat stat-rose">
+          <dt>
+            <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 7l10 10M17 7L7 17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+            </svg>
+            Losses
+          </dt>
+          <dd>{{ profile.statistics.losses }}</dd>
+        </div>
+        <div class="stat stat-magenta">
+          <dt>
+            <img src="/game/home/mode-solo.png" alt="" />
+            Solo games
+          </dt>
+          <dd>{{ profile.statistics.soloGames }}</dd>
+        </div>
+        <div class="stat stat-cyan">
+          <dt>
+            <img src="/game/home/mode-battle.png" alt="" />
+            Battle Games
+          </dt>
+          <dd>{{ profile.statistics.battleGames }}</dd>
+        </div>
+        <div class="stat stat-purple">
+          <dt>
+            <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8.2 9.1a3.8 3.8 0 1 1 5.7 3.3c-.9.6-1.6 1.3-1.6 2.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+              <circle cx="12.3" cy="18.2" r="1.2" fill="currentColor" />
+            </svg>
+            Questions
+          </dt>
+          <dd>{{ profile.statistics.questionsAnswered }}</dd>
+        </div>
+        <div class="stat stat-teal">
+          <dt>
+            <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="2.2" />
+              <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2.2" />
+              <circle cx="12" cy="12" r="1.2" fill="currentColor" />
+            </svg>
+            Accuracy
+          </dt>
+          <dd>{{ profile.statistics.accuracy }}%</dd>
+        </div>
+        <div class="stat stat-amber">
+          <dt>
+            <img src="/game/home/icon-leaderboard.png" alt="" />
+            Best Score
+          </dt>
+          <dd>{{ profile.statistics.bestScore }}</dd>
+        </div>
+        <div class="stat stat-orange">
+          <dt>
+            <svg class="mark" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M13 3L6 13h5l-1 8 8-12h-5l0-6z" fill="currentColor" />
+            </svg>
+            Best Streak
+          </dt>
+          <dd>{{ profile.statistics.bestStreak }}</dd>
+        </div>
+        <div class="stat stat-blue">
+          <dt>
+            <img src="/game/home/icon-ranking.png" alt="" />
+            Favorite Category
+          </dt>
+          <dd>{{ profile.statistics.favoriteCategory ?? 'None yet' }}</dd>
+        </div>
+      </dl>
 
       <p class="dates">
         Created {{ formatDate(profile.createdAt) }}. Updated {{ formatDate(profile.updatedAt) }}.
       </p>
-
-      <app-game-button variant="secondary" (click)="goHome()">Back to lobby</app-game-button>
     }
   </section>
 </app-game-background>

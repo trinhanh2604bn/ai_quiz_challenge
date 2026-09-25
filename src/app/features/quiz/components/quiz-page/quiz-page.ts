@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  HostListener,
   OnInit,
   computed,
   effect,
@@ -11,10 +12,12 @@ import {
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AchievementService } from '../../../game/achievements/services/achievement.service';
-import { GameBackgroundComponent } from '../../../game/components/game-background/game-background';
-import { GameCardComponent } from '../../../game/components/game-card/game-card';
 import { GameHudComponent } from '../../../game/components/game-hud/game-hud';
+import { SettingsModalComponent } from '../../../game/components/settings-modal/settings-modal';
+import { avatarById } from '../../../game/profile/data/avatars.data';
+import { levelProgress } from '../../../game/profile/data/progression.data';
 import { ProfileService } from '../../../game/profile/services/profile.service';
+import { SettingsService } from '../../../game/services/settings.service';
 import { AudioService } from '../../services/audio.service';
 import { QuizService } from '../../services/quiz.service';
 import { QuestionCardComponent } from '../question-card/question-card';
@@ -25,14 +28,7 @@ const FEEDBACK_DELAY_MS = 800;
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-quiz-page',
-  imports: [
-    GameBackgroundComponent,
-    GameCardComponent,
-    GameHudComponent,
-    QuestionCardComponent,
-    TimerComponent,
-    RouterLink,
-  ],
+  imports: [GameHudComponent, QuestionCardComponent, TimerComponent, RouterLink, SettingsModalComponent],
   templateUrl: './quiz-page.html',
   styleUrl: './quiz-page.scss',
 })
@@ -41,9 +37,42 @@ export class QuizPageComponent implements OnInit {
   private readonly audio = inject(AudioService);
   private readonly achievements = inject(AchievementService);
   private readonly profiles = inject(ProfileService);
+  private readonly settings = inject(SettingsService);
   private readonly router = inject(Router);
   private feedbackTimer: ReturnType<typeof setTimeout> | null = null;
   private feedbackPending = false;
+  private overlayOpener: HTMLElement | null = null;
+
+  readonly settingsOpen = signal(false);
+  readonly soundEnabled = this.settings.soundEnabled;
+  readonly settingsIconSrc = 'game/home/icon-settings.png';
+  readonly soundIconSrc = computed(() =>
+    this.soundEnabled() ? 'game/home/icon-sound-on.png' : 'game/home/icon-sound-off.png',
+  );
+  readonly soundLabel = computed(() => (this.soundEnabled() ? 'Sound on' : 'Sound off'));
+  readonly profile = this.profiles.profile;
+  readonly hudName = computed(() => {
+    const name = this.profile()?.nickname.trim() ?? '';
+    return name.length > 0 ? name : 'You';
+  });
+  readonly hudLevel = computed(() => this.profile()?.level ?? null);
+  readonly hudAvatar = computed(() => {
+    const profile = this.profile();
+    if (!profile) {
+      return '';
+    }
+
+    return avatarById(profile.avatarId)?.glyph ?? '';
+  });
+  readonly hudXp = computed(() => {
+    const profile = this.profile();
+    return profile ? levelProgress(profile.experience) : null;
+  });
+  readonly hudXpLabel = computed(() => {
+    const xp = this.hudXp();
+    return xp ? `${xp.intoLevel} / ${xp.span} XP` : '';
+  });
+  readonly hudXpPercent = computed(() => this.hudXp()?.percent ?? null);
 
   readonly selectedOption = signal<number | null>(null);
   readonly totalQuestions = this.quiz.totalQuestions;
@@ -211,5 +240,39 @@ export class QuizPageComponent implements OnInit {
 
     this.audio.playCompleteSound();
     void this.router.navigate(['/result']);
+  }
+
+  openSettings(event: Event): void {
+    this.audio.playButtonClick();
+    const current = event.currentTarget;
+    this.overlayOpener = current instanceof HTMLElement ? current : null;
+    this.settingsOpen.set(true);
+  }
+
+  closeSettings(): void {
+    this.audio.playButtonClick();
+    this.settingsOpen.set(false);
+    this.restoreOpener();
+  }
+
+  toggleSound(): void {
+    this.audio.playButtonClick();
+    this.settings.toggleSound();
+  }
+
+  @HostListener('document:keydown.escape')
+  closeSettingsOnEscape(): void {
+    if (!this.settingsOpen()) {
+      return;
+    }
+
+    this.settingsOpen.set(false);
+    this.restoreOpener();
+  }
+
+  private restoreOpener(): void {
+    const opener = this.overlayOpener;
+    this.overlayOpener = null;
+    opener?.focus();
   }
 }

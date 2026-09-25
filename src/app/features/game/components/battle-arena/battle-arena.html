@@ -1,18 +1,21 @@
-<app-game-background>
-  <section class="arena" [attr.data-battle-state]="state()">
-    @if (state() === 'transition') {
-      <app-battle-transition
-        [playerName]="currentPlayer()?.name ?? 'Next player'"
-        (continued)="continueTurn()"
-      />
-    } @else if (currentQuestion(); as question) {
-      <header class="turn-head">
-        <p class="eyebrow">Battle arena</p>
-        <h1 class="turn-indicator">{{ currentPlayer()?.name }}'s turn</h1>
-        <p class="step">Question {{ questionNumber() }} of {{ totalQuestions() }}</p>
-        <p class="bonus">Streak bonus {{ multiplier() }}x</p>
-      </header>
+<section class="arena" [attr.data-battle-state]="state()">
+  @if (state() === 'transition') {
+    <app-battle-transition
+      [playerName]="currentPlayer()?.name ?? 'Next player'"
+      (continued)="continueTurn()"
+    />
+  } @else if (currentQuestion(); as question) {
+    <header class="hero">
+      <p class="arena-label">Battle Arena</p>
+      <h1 class="turn-indicator">{{ currentPlayer()?.name }}'s turn</h1>
+      <p class="meta">
+        <span class="step">Question {{ questionNumber() }} of {{ totalQuestions() }}</span>
+        <span class="dot" aria-hidden="true">·</span>
+        <span class="bonus">Streak bonus {{ multiplier() }}x</span>
+      </p>
+    </header>
 
+    <div class="hud">
       <div class="duel">
         @for (player of players(); track player.id) {
           @if ($index === 1) {
@@ -23,24 +26,27 @@
             [score]="player.score"
             [streak]="player.streak"
             [active]="player.id === currentPlayer()?.id"
+            [tone]="$index === 0 ? 'pink' : 'blue'"
           />
         }
       </div>
-
-      <div class="round">
-        <div class="round-head">
-          <p class="session">{{ question.category }} · {{ question.difficulty }}</p>
-          @if (state() === 'player-turn' && !showingFeedback()) {
-            <app-timer (timedOut)="onTimeout(question.id)" />
-          }
+      @if (state() === 'player-turn' && !showingFeedback()) {
+        <div class="clock">
+          <app-timer (timedOut)="onTimeout(question.id)" />
         </div>
-        <app-question-card
-          [question]="question"
-          [badge]="'Question ' + questionNumber()"
-          [selectedIndex]="selectedOption()"
-          (answerSelected)="onAnswerSelected($event)"
-        />
+      }
+    </div>
+
+    <div class="stage">
+      <div class="host" aria-hidden="true">
+        <img class="mascot" src="game/home/mascot-point.png" alt="" />
       </div>
-    }
-  </section>
-</app-game-background>
+      <app-question-card
+        [question]="question"
+        [badge]="'Question ' + questionNumber()"
+        [selectedIndex]="selectedOption()"
+        (answerSelected)="onAnswerSelected($event)"
+      />
+    </div>
+  }
+</section>

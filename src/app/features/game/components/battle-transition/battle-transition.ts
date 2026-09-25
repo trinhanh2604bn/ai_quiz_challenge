@@ -1,10 +1,8 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { GameCardComponent } from '../game-card/game-card';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-battle-transition',
-  imports: [GameCardComponent],
   templateUrl: './battle-transition.html',
   styleUrl: './battle-transition.scss',
 })

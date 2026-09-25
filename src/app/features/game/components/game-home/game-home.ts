@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   HostListener,
+  computed,
   effect,
   inject,
   signal,
@@ -11,30 +12,22 @@ import {
 import { Router } from '@angular/router';
 import { LeaderboardComponent } from '../../../quiz/components/leaderboard/leaderboard';
 import { LeaderboardService } from '../../../quiz/services/leaderboard.service';
+import { keepFocusInside } from '../../../../core/a11y/focus-trap';
 import { AudioService } from '../../audio/services/audio.service';
-import { ProfileCardComponent } from '../../profile/components/profile-card/profile-card';
-import { XpBarComponent } from '../../profile/components/xp-bar/xp-bar';
+import { avatarById } from '../../profile/data/avatars.data';
+import { levelProgress } from '../../profile/data/progression.data';
 import { ProfileService } from '../../profile/services/profile.service';
 import { GameService } from '../../services/game.service';
 import { SettingsService } from '../../services/settings.service';
-import { GameBackgroundComponent } from '../game-background/game-background';
 import { GameButtonComponent } from '../game-button/game-button';
-import { GameCardComponent } from '../game-card/game-card';
 import { SettingsModalComponent } from '../settings-modal/settings-modal';
-import { keepFocusInside } from '../../../../core/a11y/focus-trap';
+
+const HOME_ASSET = 'game/home';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-game-home',
-  imports: [
-    SettingsModalComponent,
-    LeaderboardComponent,
-    GameBackgroundComponent,
-    GameCardComponent,
-    GameButtonComponent,
-    ProfileCardComponent,
-    XpBarComponent,
-  ],
+  imports: [SettingsModalComponent, LeaderboardComponent, GameButtonComponent],
   templateUrl: './game-home.html',
   styleUrl: './game-home.scss',
 })
@@ -45,17 +38,46 @@ export class GameHomeComponent {
   private readonly leaderboard = inject(LeaderboardService);
   private readonly profiles = inject(ProfileService);
   private readonly router = inject(Router);
-  private readonly leaderboardCloseButton = viewChild<ElementRef<HTMLElement>>('leaderboardClose');
+  private readonly leaderboardCloseButton = viewChild('leaderboardClose', { read: ElementRef });
   private overlayOpener: HTMLElement | null = null;
 
   readonly entries = this.leaderboard.entries;
   readonly player = this.profiles.profile;
+  readonly xp = computed(() => levelProgress(this.player()?.experience ?? 0));
+  readonly avatarGlyph = computed(() => {
+    const profile = this.player();
+    if (!profile) {
+      return '';
+    }
+
+    const avatar = avatarById(profile.avatarId);
+    if (avatar) {
+      return avatar.glyph;
+    }
+
+    const letter = profile.nickname.trim().charAt(0).toUpperCase();
+    return letter || '?';
+  });
 
   readonly mode = this.game.mode;
   readonly state = this.game.state;
   readonly soundEnabled = this.settings.soundEnabled;
   readonly settingsOpen = signal(false);
   readonly leaderboardOpen = signal(false);
+  readonly logoSrc = `${HOME_ASSET}/game-logo.png`;
+  readonly sloganSrc = `${HOME_ASSET}/slogan-banner.png`;
+  readonly mascotSrc = `${HOME_ASSET}/mascot-wave.png`;
+  readonly soloArtSrc = `${HOME_ASSET}/mode-solo.png`;
+  readonly battleArtSrc = `${HOME_ASSET}/mode-battle.png`;
+  readonly profileIconSrc = `${HOME_ASSET}/icon-profile.png`;
+  readonly achievementsIconSrc = `${HOME_ASSET}/icon-achievements.png`;
+  readonly rankingIconSrc = `${HOME_ASSET}/icon-ranking.png`;
+  readonly leaderboardIconSrc = `${HOME_ASSET}/icon-leaderboard.png`;
+  readonly settingsIconSrc = `${HOME_ASSET}/icon-settings.png`;
+  readonly soundIconSrc = computed(() =>
+    this.soundEnabled() ? `${HOME_ASSET}/icon-sound-on.png` : `${HOME_ASSET}/icon-sound-off.png`,
+  );
+  readonly soundLabel = computed(() => (this.soundEnabled() ? 'Sound on' : 'Sound off'));
 
   constructor() {
     this.audio.playMenuMusic();

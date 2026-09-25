@@ -146,10 +146,10 @@ describe('Gameplay arena UI', () => {
     discardPeriodicTasks();
   }));
 
-  it('does not overflow the solo arena at 390px, 768px, and 1280px', fakeAsync(() => {
+  it('does not overflow the solo arena at 390px, 768px, 1280px, and 1440px', fakeAsync(() => {
     expect(TestBed.inject(QuizService).startQuiz('Prompt Engineering', 'Hard')).toBeTrue();
 
-    for (const width of [390, 768, 1280]) {
+    for (const width of [390, 768, 1280, 1440]) {
       setViewport(width);
       const fixture = TestBed.createComponent(QuizPageComponent);
       const host = fixture.nativeElement as HTMLElement;
@@ -167,7 +167,7 @@ describe('Gameplay arena UI', () => {
   it('does not overflow the battle arena or the pass screen', fakeAsync(() => {
     const longName = 'Pneumonoultramicroscopicsilicovolcanoconiosis';
 
-    for (const width of [390, 768, 1280]) {
+    for (const width of [390, 768, 1280, 1440]) {
       setViewport(width);
       const playing = startArena(longName, sampleQuestion());
       const playingHost = playing.nativeElement as HTMLElement;

@@ -13,4 +13,5 @@ export class PlayerPanelComponent {
   readonly score = input.required<number>();
   readonly streak = input.required<number>();
   readonly active = input(false);
+  readonly tone = input<'pink' | 'blue'>('pink');
 }

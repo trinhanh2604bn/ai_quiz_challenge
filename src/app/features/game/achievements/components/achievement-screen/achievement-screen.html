@@ -1,35 +1,46 @@
-<app-game-background>
+<app-game-background scene="home">
   <section class="achievements" aria-labelledby="achievements-title">
-    <header class="hero">
-      <p class="eyebrow">Rewards</p>
-      <h1 id="achievements-title" class="game-heading">Achievements</h1>
-      <p class="game-body lead">{{ unlocked().length }} of {{ total().length }} unlocked.</p>
+    <header class="page-head">
+      <div class="titles">
+        <p class="kicker">Rewards</p>
+        <h1 id="achievements-title">Achievements</h1>
+        <p class="count">{{ unlocked().length }} / {{ total().length }} unlocked</p>
+        <div
+          class="meter"
+          role="progressbar"
+          aria-label="Achievements unlocked"
+          [attr.aria-valuemin]="0"
+          [attr.aria-valuemax]="total().length"
+          [attr.aria-valuenow]="unlocked().length"
+        >
+          <span
+            class="meter-fill"
+            [style.width.%]="total().length === 0 ? 0 : (100 * unlocked().length) / total().length"
+          ></span>
+        </div>
+      </div>
+      <img class="trophy" src="/game/home/icon-achievements.png" alt="" />
+      <app-game-button class="back" variant="secondary" (click)="goHome()">
+        Back to Lobby
+      </app-game-button>
     </header>
-
-    <app-game-button variant="secondary" (click)="goHome()">Back to lobby</app-game-button>
 
     <h2>Unlocked</h2>
     @if (unlocked().length === 0) {
-      <app-game-card>
-        <p class="game-body empty">No achievements unlocked yet.</p>
-      </app-game-card>
+      <p class="empty">No achievements unlocked yet.</p>
     } @else {
-      <ul class="achievement-list">
+      <ul class="gallery">
         @for (item of unlocked(); track item.id) {
           <li>
-            <app-game-card>
-              <article class="row">
-                <span class="icon" aria-hidden="true">{{ item.icon }}</span>
-                <div class="copy">
-                  <p class="status">Unlocked</p>
-                  <h3>{{ item.title }}</h3>
-                  <p class="game-body">{{ item.description }}</p>
-                  @if (item.unlockedAt !== null) {
-                    <p class="when">Unlocked {{ formatDate(item.unlockedAt) }}</p>
-                  }
-                </div>
-              </article>
-            </app-game-card>
+            <article class="badge-card is-unlocked">
+              <span class="badge-icon" aria-hidden="true">{{ item.icon }}</span>
+              <p class="status">Unlocked</p>
+              <h3>{{ item.title }}</h3>
+              <p class="description">{{ item.description }}</p>
+              @if (item.unlockedAt !== null) {
+                <p class="when">Unlocked {{ formatDate(item.unlockedAt) }}</p>
+              }
+            </article>
           </li>
         }
       </ul>
@@ -37,23 +48,18 @@
 
     <h2>Locked</h2>
     @if (locked().length === 0) {
-      <app-game-card>
-        <p class="game-body empty">Every achievement is unlocked.</p>
-      </app-game-card>
+      <p class="empty">Every achievement is unlocked.</p>
     } @else {
-      <ul class="achievement-list">
+      <ul class="gallery">
         @for (item of locked(); track item.id) {
           <li>
-            <app-game-card>
-              <article class="row is-locked">
-                <span class="icon" aria-hidden="true">{{ item.icon }}</span>
-                <div class="copy">
-                  <p class="status">Locked</p>
-                  <h3>{{ item.title }}</h3>
-                  <p class="game-body">{{ item.description }}</p>
-                </div>
-              </article>
-            </app-game-card>
+            <article class="badge-card is-locked">
+              <span class="lock" aria-hidden="true"></span>
+              <span class="badge-icon" aria-hidden="true">{{ item.icon }}</span>
+              <p class="status">Locked</p>
+              <h3>{{ item.title }}</h3>
+              <p class="description">{{ item.description }}</p>
+            </article>
           </li>
         }
       </ul>
