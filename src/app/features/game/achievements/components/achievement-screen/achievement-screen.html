@@ -1,0 +1,62 @@
+<app-game-background>
+  <section class="achievements" aria-labelledby="achievements-title">
+    <header class="hero">
+      <p class="eyebrow">Rewards</p>
+      <h1 id="achievements-title" class="game-heading">Achievements</h1>
+      <p class="game-body lead">{{ unlocked().length }} of {{ total().length }} unlocked.</p>
+    </header>
+
+    <app-game-button variant="secondary" (click)="goHome()">Back to lobby</app-game-button>
+
+    <h2>Unlocked</h2>
+    @if (unlocked().length === 0) {
+      <app-game-card>
+        <p class="game-body empty">No achievements unlocked yet.</p>
+      </app-game-card>
+    } @else {
+      <ul class="achievement-list">
+        @for (item of unlocked(); track item.id) {
+          <li>
+            <app-game-card>
+              <article class="row">
+                <span class="icon" aria-hidden="true">{{ item.icon }}</span>
+                <div class="copy">
+                  <p class="status">Unlocked</p>
+                  <h3>{{ item.title }}</h3>
+                  <p class="game-body">{{ item.description }}</p>
+                  @if (item.unlockedAt !== null) {
+                    <p class="when">Unlocked {{ formatDate(item.unlockedAt) }}</p>
+                  }
+                </div>
+              </article>
+            </app-game-card>
+          </li>
+        }
+      </ul>
+    }
+
+    <h2>Locked</h2>
+    @if (locked().length === 0) {
+      <app-game-card>
+        <p class="game-body empty">Every achievement is unlocked.</p>
+      </app-game-card>
+    } @else {
+      <ul class="achievement-list">
+        @for (item of locked(); track item.id) {
+          <li>
+            <app-game-card>
+              <article class="row is-locked">
+                <span class="icon" aria-hidden="true">{{ item.icon }}</span>
+                <div class="copy">
+                  <p class="status">Locked</p>
+                  <h3>{{ item.title }}</h3>
+                  <p class="game-body">{{ item.description }}</p>
+                </div>
+              </article>
+            </app-game-card>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</app-game-background>

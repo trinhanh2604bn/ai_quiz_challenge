@@ -1,9 +1,11 @@
-import { Component, DestroyRef, computed, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, output, signal } from '@angular/core';
 import { AudioService } from '../../services/audio.service';
 
 const COUNTDOWN_SECONDS = 15;
+const RING_LENGTH = 188.5;
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-timer',
   imports: [],
   templateUrl: './timer.html',
@@ -13,6 +15,8 @@ export class TimerComponent {
   readonly timedOut = output<void>();
   readonly secondsLeft = signal(COUNTDOWN_SECONDS);
   readonly fillPercent = computed(() => (this.secondsLeft() / COUNTDOWN_SECONDS) * 100);
+  readonly ringLength = RING_LENGTH;
+  readonly dashOffset = computed(() => RING_LENGTH * (1 - this.fillPercent() / 100));
 
   private readonly audio = inject(AudioService);
   private intervalId: ReturnType<typeof setInterval> | null = null;

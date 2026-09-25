@@ -1,45 +1,63 @@
-app-score-board,
-app-progress-bar {
+:host {
   display: block;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 100vh;
 }
 
-app-progress-bar {
-  margin-top: 0.75rem;
+app-game-background {
+  display: block;
+  min-height: 100vh;
+}
+
+.arena {
+  display: grid;
+  gap: var(--space-medium);
+  width: min(72rem, 100%);
+  margin: 0 auto;
+  padding: var(--space-medium) var(--space-medium) var(--space-large);
+  min-width: 0;
+  container-type: inline-size;
 }
 
 .round {
-  margin-top: 1rem;
+  display: grid;
+  gap: var(--space-small);
+  min-width: 0;
+  animation: arena-enter 380ms ease both;
 }
 
 .round-head {
   display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  margin-bottom: 1rem;
-}
-
-.session {
-  margin: 0;
-  color: var(--accent);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.step {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 700;
+  justify-content: flex-end;
+  min-width: 0;
 }
 
 .empty-state p {
   margin: 0;
   color: var(--danger);
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .empty-state .btn {
   margin-top: 1rem;
+}
+
+@keyframes arena-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .round {
+    animation: none;
+  }
 }

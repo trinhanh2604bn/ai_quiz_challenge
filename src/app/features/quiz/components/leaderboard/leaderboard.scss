@@ -63,9 +63,26 @@ li:first-child .rank {
   min-width: 0;
 }
 
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.avatar {
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
 .name {
   font-weight: 700;
   overflow-wrap: anywhere;
+}
+
+.level {
+  font-weight: 700;
 }
 
 .when,

@@ -12,6 +12,8 @@ A timed quiz about artificial intelligence. Answer one question at a time, keep 
 - Progress bar for quiz completion
 - Final result screen
 - Leaderboard of the top scores, stored in `localStorage`
+- Achievements for quiz completion, perfect scores, streaks, high scores, and battles, stored in `localStorage` under `ai-quiz-achievements`
+- Competitive ranking for the active season, with global, season, and category boards and Bronze through Master tiers, stored separately from the leaderboard
 
 ## Technology stack
 
@@ -61,6 +63,7 @@ The quiz lives under `src/app/features/quiz/`.
 Routes:
 
 - `/` — start screen and previous best scores
+- `/achievements` — unlocked and locked achievements
 - `/quiz` — the active question
 - `/result` — final score, accuracy, and save form
 

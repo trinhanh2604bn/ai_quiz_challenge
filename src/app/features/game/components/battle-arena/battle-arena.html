@@ -1,0 +1,46 @@
+<app-game-background>
+  <section class="arena" [attr.data-battle-state]="state()">
+    @if (state() === 'transition') {
+      <app-battle-transition
+        [playerName]="currentPlayer()?.name ?? 'Next player'"
+        (continued)="continueTurn()"
+      />
+    } @else if (currentQuestion(); as question) {
+      <header class="turn-head">
+        <p class="eyebrow">Battle arena</p>
+        <h1 class="turn-indicator">{{ currentPlayer()?.name }}'s turn</h1>
+        <p class="step">Question {{ questionNumber() }} of {{ totalQuestions() }}</p>
+        <p class="bonus">Streak bonus {{ multiplier() }}x</p>
+      </header>
+
+      <div class="duel">
+        @for (player of players(); track player.id) {
+          @if ($index === 1) {
+            <p class="vs" aria-hidden="true">VS</p>
+          }
+          <app-player-panel
+            [name]="player.name"
+            [score]="player.score"
+            [streak]="player.streak"
+            [active]="player.id === currentPlayer()?.id"
+          />
+        }
+      </div>
+
+      <div class="round">
+        <div class="round-head">
+          <p class="session">{{ question.category }} · {{ question.difficulty }}</p>
+          @if (state() === 'player-turn' && !showingFeedback()) {
+            <app-timer (timedOut)="onTimeout(question.id)" />
+          }
+        </div>
+        <app-question-card
+          [question]="question"
+          [badge]="'Question ' + questionNumber()"
+          [selectedIndex]="selectedOption()"
+          (answerSelected)="onAnswerSelected($event)"
+        />
+      </div>
+    }
+  </section>
+</app-game-background>

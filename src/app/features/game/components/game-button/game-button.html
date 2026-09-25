@@ -1,0 +1,13 @@
+<button
+  class="game-button"
+  [class.is-primary]="variant() === 'primary'"
+  [class.is-secondary]="variant() === 'secondary'"
+  [disabled]="disabled()"
+  [attr.type]="type()"
+  [attr.role]="buttonRole()"
+  [attr.aria-expanded]="expanded()"
+  [attr.aria-checked]="checked()"
+  [attr.aria-haspopup]="popup()"
+>
+  <ng-content />
+</button>

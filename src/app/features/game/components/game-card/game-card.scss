@@ -1,0 +1,30 @@
+:host {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  container-type: inline-size;
+}
+
+.card {
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--space-small);
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow-wrap: anywhere;
+}
+
+@container (min-width: 768px) {
+  .card {
+    padding: var(--space-medium);
+  }
+}
+
+@container (min-width: 1280px) {
+  .card {
+    padding: var(--space-large);
+  }
+}

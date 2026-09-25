@@ -1,0 +1,40 @@
+:host {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0.15rem;
+  pointer-events: none;
+}
+
+.popup {
+  display: block;
+  color: var(--success);
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  animation: score-float 720ms ease forwards;
+}
+
+@keyframes score-float {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  25% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup {
+    animation: none;
+  }
+}

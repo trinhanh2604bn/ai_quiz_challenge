@@ -1,0 +1,65 @@
+<div class="backdrop" (click)="close()">
+  <div
+    class="dialog panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settings-title"
+    (click)="$event.stopPropagation()"
+    (keydown)="trapFocus($event)"
+  >
+    <p class="eyebrow">Preferences</p>
+    <h2 id="settings-title">Settings</h2>
+
+    <div class="setting">
+      <span>Sound</span>
+      <button
+        type="button"
+        class="btn btn-secondary switch"
+        role="switch"
+        [attr.aria-checked]="soundEnabled()"
+        [attr.aria-label]="soundEnabled() ? 'Sound on' : 'Sound off'"
+        (click)="toggleSound()"
+      >
+        {{ soundEnabled() ? 'On' : 'Off' }}
+      </button>
+    </div>
+
+    <div class="setting volume">
+      <div class="volume-row">
+        <label for="settings-volume">Volume</label>
+        <span class="value">{{ volumePercent() }}%</span>
+      </div>
+      <input
+        id="settings-volume"
+        type="range"
+        min="0"
+        max="100"
+        step="1"
+        [value]="volumePercent()"
+        [attr.aria-valuetext]="volumePercent() + '%'"
+        (input)="setVolume($event)"
+      />
+    </div>
+
+    <div class="setting">
+      <span>Animation</span>
+      <button
+        type="button"
+        class="btn btn-secondary switch"
+        role="switch"
+        [attr.aria-checked]="animationEnabled()"
+        [attr.aria-label]="animationEnabled() ? 'Animation on' : 'Animation off'"
+        (click)="toggleAnimation()"
+      >
+        {{ animationEnabled() ? 'On' : 'Off' }}
+      </button>
+    </div>
+
+    <div class="setting">
+      <span>Language</span>
+      <span class="value">{{ languageLabel() }}</span>
+    </div>
+
+    <button #closeButton type="button" class="btn btn-primary close" (click)="close()">Close</button>
+  </div>
+</div>

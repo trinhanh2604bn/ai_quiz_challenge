@@ -7,3 +7,28 @@ main {
   display: block;
   min-height: 100vh;
 }
+
+.app-recovery {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: var(--danger-soft);
+  color: var(--danger);
+  border-bottom: 1px solid var(--danger);
+}
+
+.app-recovery p {
+  margin: 0;
+}
+
+.app-recovery a {
+  color: inherit;
+  font-weight: 700;
+}

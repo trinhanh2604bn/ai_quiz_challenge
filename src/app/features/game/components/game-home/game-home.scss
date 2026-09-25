@@ -1,0 +1,228 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+app-game-background {
+  display: block;
+  min-height: 100vh;
+}
+
+.lobby {
+  width: min(52rem, 100%);
+  margin: 0 auto;
+  padding: var(--space-medium) var(--space-medium) var(--space-large);
+  animation: lobby-enter 420ms ease both;
+}
+
+.hero {
+  min-width: 0;
+}
+
+h1 {
+  margin: 0;
+}
+
+.lead {
+  max-width: 38rem;
+  margin: var(--space-small) 0 0;
+  color: var(--muted);
+}
+
+.modes,
+.utilities {
+  display: grid;
+  gap: var(--space-medium);
+  margin-top: var(--space-medium);
+  min-width: 0;
+}
+
+.mode-card {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 180ms ease;
+}
+
+.mode-card app-game-card {
+  display: block;
+  width: 100%;
+}
+
+.mode-card:hover {
+  transform: translateY(-4px);
+}
+
+.mode-card:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.mode-card.is-selected app-game-card {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  box-shadow: 0 0 24px color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+.mode-body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-medium);
+  min-width: 0;
+}
+
+.icon {
+  display: block;
+  flex: 0 0 auto;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 1rem;
+  background: var(--primary) center / 1.7rem 1.7rem no-repeat;
+}
+
+.icon-solo {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='8' r='3.2' fill='white'/%3E%3Cpath d='M5.5 19.2c1.1-3.3 3.4-4.9 6.5-4.9s5.4 1.6 6.5 4.9' fill='none' stroke='white' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+.icon-battle {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M4 5.2 10.2 12l-1.6.6L8.8 19l4.2-6.2-1.7-.6L16.2 5.2H4zm8.2 0H20L14.6 12l1.7.6L14 19l-1.2-6.4 1.6-.6L12.2 5.2z'/%3E%3C/svg%3E");
+}
+
+.mode-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.mode-kicker {
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mode-title {
+  color: var(--text);
+  font-size: clamp(1.35rem, 4vw, 1.7rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.mode-desc {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.utilities app-game-button {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+
+.profile-summary {
+  display: grid;
+  gap: var(--space-small);
+  width: 100%;
+  min-width: 0;
+  margin-top: var(--space-medium);
+  padding: var(--space-medium);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.status {
+  margin: var(--space-medium) 0 0;
+  padding: 0.85rem var(--space-medium);
+  border: 1px solid #c7d2fe;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: end center;
+  padding: 0.75rem;
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.backdrop app-game-card {
+  width: min(26rem, 100%);
+  min-width: 0;
+  max-width: 100%;
+  max-height: calc(100vh - 1.5rem);
+  overflow: auto;
+}
+
+.dialog app-game-button {
+  display: flex;
+  width: 100%;
+  margin-top: var(--space-medium);
+}
+
+@keyframes lobby-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .lobby {
+    padding-top: var(--space-large);
+  }
+
+  .modes,
+  .utilities {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .backdrop {
+    place-items: center;
+  }
+}
+
+@media (min-width: 1280px) {
+  .utilities {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lobby,
+  .mode-card {
+    animation: none;
+    transition: none;
+  }
+
+  .mode-card:hover,
+  .mode-card:active {
+    transform: none;
+  }
+}
+
+.mode-card:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}

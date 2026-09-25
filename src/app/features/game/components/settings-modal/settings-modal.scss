@@ -1,0 +1,74 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: end center;
+  padding: 0.75rem;
+  background: rgba(15, 23, 42, 0.48);
+}
+
+.dialog {
+  width: min(26rem, 100%);
+  max-height: calc(100vh - 1.5rem);
+  overflow: auto;
+}
+
+h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 3.25rem;
+  border-bottom: 1px solid var(--line);
+  font-weight: 700;
+}
+
+.switch {
+  width: auto;
+  min-width: 5.5rem;
+}
+
+.volume {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+}
+
+.volume-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.volume input {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.value {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.close {
+  width: 100%;
+  margin-top: 1.25rem;
+}
+
+@media (min-width: 641px) {
+  .backdrop {
+    place-items: center;
+    padding: 1.25rem;
+  }
+}

@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   OnInit,
@@ -9,21 +10,26 @@ import {
   untracked,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { AchievementService } from '../../../game/achievements/services/achievement.service';
+import { GameBackgroundComponent } from '../../../game/components/game-background/game-background';
+import { GameCardComponent } from '../../../game/components/game-card/game-card';
+import { GameHudComponent } from '../../../game/components/game-hud/game-hud';
+import { ProfileService } from '../../../game/profile/services/profile.service';
 import { AudioService } from '../../services/audio.service';
 import { QuizService } from '../../services/quiz.service';
-import { ProgressBarComponent } from '../progress-bar/progress-bar';
 import { QuestionCardComponent } from '../question-card/question-card';
-import { ScoreBoardComponent } from '../score-board/score-board';
 import { TimerComponent } from '../timer/timer';
 
 const FEEDBACK_DELAY_MS = 800;
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-quiz-page',
   imports: [
-    ProgressBarComponent,
+    GameBackgroundComponent,
+    GameCardComponent,
+    GameHudComponent,
     QuestionCardComponent,
-    ScoreBoardComponent,
     TimerComponent,
     RouterLink,
   ],
@@ -33,6 +39,8 @@ const FEEDBACK_DELAY_MS = 800;
 export class QuizPageComponent implements OnInit {
   private readonly quiz = inject(QuizService);
   private readonly audio = inject(AudioService);
+  private readonly achievements = inject(AchievementService);
+  private readonly profiles = inject(ProfileService);
   private readonly router = inject(Router);
   private feedbackTimer: ReturnType<typeof setTimeout> | null = null;
   private feedbackPending = false;
@@ -47,6 +55,18 @@ export class QuizPageComponent implements OnInit {
   readonly category = this.quiz.category;
   readonly difficulty = this.quiz.difficulty;
   readonly questionNumber = computed(() => this.quiz.index() + 1);
+  readonly questionLabel = computed(
+    () => `Question ${this.questionNumber()} of ${this.totalQuestions()}`,
+  );
+  readonly sessionDetail = computed(() => {
+    const category = this.category();
+    const difficulty = this.difficulty();
+    if (!category || !difficulty) {
+      return '';
+    }
+
+    return `${category} · ${difficulty}`;
+  });
   readonly showEmptySelection = computed(
     () => this.quiz.isInProgress() && this.quiz.currentQuestion() === null,
   );
@@ -60,7 +80,10 @@ export class QuizPageComponent implements OnInit {
   });
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.clearFeedbackTimer());
+    inject(DestroyRef).onDestroy(() => {
+      this.clearFeedbackTimer();
+      this.audio.stopScene('quiz');
+    });
 
     effect(() => {
       const questionId = this.quiz.currentQuestion()?.id ?? null;
@@ -80,7 +103,10 @@ export class QuizPageComponent implements OnInit {
 
     if (!this.quiz.isInProgress()) {
       void this.router.navigate(['/']);
+      return;
     }
+
+    this.audio.playQuizMusic();
   }
 
   onAnswerSelected(optionIndex: number): void {
@@ -95,6 +121,7 @@ export class QuizPageComponent implements OnInit {
       return;
     }
 
+    this.noteAchievements();
     this.feedbackPending = true;
     this.selectedOption.set(optionIndex);
     if (optionIndex === question.correctIndex) {
@@ -116,7 +143,12 @@ export class QuizPageComponent implements OnInit {
       return;
     }
 
+    const answeredBefore = this.quiz.answeredCount();
     this.quiz.skipQuestion();
+    this.noteAchievements();
+    if (this.quiz.answeredCount() === answeredBefore + 1) {
+      this.audio.playTimeoutSound();
+    }
     this.openResultIfCompleted();
   }
 
@@ -139,10 +171,45 @@ export class QuizPageComponent implements OnInit {
     }
   }
 
+  private noteAchievements(): void {
+    const unlocked = [
+      ...this.achievements.recordScore(this.quiz.score()),
+      ...this.achievements.recordStreak(this.quiz.maxStreak()),
+    ];
+    this.profiles.recordAchievementUnlocks(unlocked.map((item) => item.id));
+  }
+
   private openResultIfCompleted(): void {
-    if (this.quiz.isCompleted()) {
-      this.audio.playCompleteSound();
-      void this.router.navigate(['/result']);
+    if (!this.quiz.isCompleted()) {
+      return;
     }
+
+    const result = this.quiz.result();
+    const category = this.quiz.category();
+    const difficulty = this.quiz.difficulty();
+    if (result && category && difficulty) {
+      const unlocked = this.achievements.recordQuizCompletion({
+        completedAt: result.completedAt,
+        score: result.score,
+        accuracy: result.accuracy,
+        maxStreak: result.maxStreak,
+        category,
+        difficulty,
+        totalQuestions: result.totalQuestions,
+        correctCount: result.correctCount,
+      });
+      this.profiles.recordQuizCompletion({
+        completedAt: result.completedAt,
+        category,
+        score: result.score,
+        maxStreak: result.maxStreak,
+        totalQuestions: result.totalQuestions,
+        correctCount: result.correctCount,
+      });
+      this.profiles.recordAchievementUnlocks(unlocked.map((item) => item.id));
+    }
+
+    this.audio.playCompleteSound();
+    void this.router.navigate(['/result']);
   }
 }

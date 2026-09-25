@@ -1,0 +1,15 @@
+<section class="pass" role="dialog" aria-labelledby="pass-title">
+  <app-game-card>
+    <div class="handoff">
+      <p class="eyebrow">Pass the device</p>
+      <p class="mark" aria-hidden="true">VS</p>
+      <h1 id="pass-title" class="game-heading">{{ playerName() }}'s turn</h1>
+      <p class="lead game-body">
+        Hand the device to {{ playerName() }}. The question stays hidden until the turn starts.
+      </p>
+      <button type="button" class="btn btn-primary continue" (click)="continued.emit()">
+        Continue
+      </button>
+    </div>
+  </app-game-card>
+</section>

@@ -1,5 +1,5 @@
 <section class="panel board" aria-label="Leaderboard">
-  <h2>Leaderboard</h2>
+  <h2 id="leaderboard-heading">Leaderboard</h2>
   @if (entries().length === 0) {
     <p class="empty">No scores yet. Finish a quiz and save your name to appear here.</p>
   } @else {
@@ -8,8 +8,20 @@
         <li>
           <span class="rank">{{ $index + 1 }}</span>
           <span class="who">
-            <span class="name">{{ entry.playerName }}</span>
-            <span class="when">{{ formatCompletedAt(entry.completedAt) }}</span>
+            <span class="name-row">
+              <span class="avatar" aria-hidden="true">{{ avatarGlyph(entry) }}</span>
+              <span class="name">{{ entry.playerName }}</span>
+            </span>
+            <span class="when">
+              @if (entry.level !== undefined) {
+                <span class="level">Lv {{ entry.level }}</span>
+                ·
+              }
+              {{ formatCompletedAt(entry.completedAt) }}
+              @if (entry.mode === 'two-player') {
+                · Two players
+              }
+            </span>
           </span>
           <span class="figures">
             <span class="points">{{ entry.score }} pts</span>

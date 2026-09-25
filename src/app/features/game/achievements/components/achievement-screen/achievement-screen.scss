@@ -1,0 +1,106 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+app-game-background {
+  display: block;
+  min-height: 100vh;
+}
+
+.achievements {
+  width: min(52rem, 100%);
+  margin: 0 auto;
+  padding: var(--space-medium) var(--space-medium) var(--space-large);
+}
+
+.hero {
+  min-width: 0;
+}
+
+.lead {
+  margin-top: var(--space-small);
+  color: var(--muted);
+}
+
+h2 {
+  margin: var(--space-large) 0 var(--space-small);
+  font-size: 1.15rem;
+}
+
+.achievements > app-game-button {
+  display: flex;
+  width: min(16rem, 100%);
+  margin-top: var(--space-medium);
+}
+
+.achievement-list {
+  display: grid;
+  gap: var(--space-medium);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.achievement-list app-game-card {
+  display: block;
+  height: 100%;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-medium);
+  min-width: 0;
+}
+
+.row.is-locked {
+  opacity: 0.72;
+}
+
+.icon {
+  flex: 0 0 auto;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.copy {
+  min-width: 0;
+}
+
+.status {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+h3 {
+  margin: 0.15rem 0 0;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.copy .game-body,
+.empty,
+.when {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.when {
+  font-size: 0.85rem;
+}
+
+@media (min-width: 768px) {
+  .achievements {
+    padding-top: var(--space-large);
+  }
+
+  .achievement-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

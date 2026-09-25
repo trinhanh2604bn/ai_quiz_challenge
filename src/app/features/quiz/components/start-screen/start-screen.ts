@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   DIFFICULTY_LEVELS,
@@ -11,6 +11,7 @@ import { QuizService } from '../../services/quiz.service';
 import { LeaderboardComponent } from '../leaderboard/leaderboard';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-start-screen',
   imports: [LeaderboardComponent],
   templateUrl: './start-screen.html',

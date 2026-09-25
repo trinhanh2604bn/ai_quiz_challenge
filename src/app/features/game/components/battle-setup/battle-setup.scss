@@ -1,0 +1,56 @@
+.versus {
+  display: grid;
+  gap: var(--space-small);
+  align-items: center;
+  min-width: 0;
+}
+
+.player-kicker {
+  margin: 0 0 var(--space-small);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.name {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.name input {
+  width: 100%;
+  min-width: 0;
+  min-height: 3.25rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--background);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+}
+
+.vs {
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+@media (min-width: 768px) {
+  .versus {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+}

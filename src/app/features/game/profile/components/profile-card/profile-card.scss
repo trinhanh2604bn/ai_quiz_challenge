@@ -1,0 +1,38 @@
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-medium);
+  min-width: 0;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name {
+  overflow-wrap: anywhere;
+  color: var(--text);
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.level {
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+}

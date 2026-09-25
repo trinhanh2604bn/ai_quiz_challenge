@@ -1,0 +1,125 @@
+<app-game-background>
+  <section
+    class="lobby"
+    [attr.data-game-mode]="mode() ?? 'none'"
+    [attr.data-game-state]="state()"
+  >
+    <header class="hero">
+      <p class="eyebrow">Game lobby</p>
+      <h1 class="game-heading">AI Knowledge Challenge</h1>
+      <p class="game-body lead">
+        Choose a solo quest or enter the battle arena. Ten questions, fifteen seconds each.
+      </p>
+    </header>
+
+    @if (player(); as profile) {
+      <div class="profile-summary">
+        <app-profile-card
+          [nickname]="profile.nickname"
+          [avatarId]="profile.avatarId"
+          [level]="profile.level"
+        />
+        <app-xp-bar [experience]="profile.experience" />
+      </div>
+    }
+
+    <div class="modes">
+      <button
+        type="button"
+        class="mode-card"
+        [class.is-selected]="mode() === 'single-player'"
+        [attr.aria-pressed]="mode() === 'single-player'"
+        (click)="chooseSinglePlayer()"
+      >
+        <app-game-card>
+          <span class="mode-body">
+            <span class="icon icon-solo" aria-hidden="true"></span>
+            <span class="mode-copy">
+              <span class="mode-kicker">Solo match</span>
+              <span class="mode-title">Solo Quest</span>
+              <span class="mode-desc">Pick a category and difficulty, then play on your own.</span>
+            </span>
+          </span>
+        </app-game-card>
+      </button>
+
+      <button
+        type="button"
+        class="mode-card"
+        [class.is-selected]="mode() === 'two-player'"
+        [attr.aria-pressed]="mode() === 'two-player'"
+        (click)="chooseTwoPlayer()"
+      >
+        <app-game-card>
+          <span class="mode-body">
+            <span class="icon icon-battle" aria-hidden="true"></span>
+            <span class="mode-copy">
+              <span class="mode-kicker">Head to head</span>
+              <span class="mode-title">Battle Arena</span>
+              <span class="mode-desc">Name two players and compete on the same questions.</span>
+            </span>
+          </span>
+        </app-game-card>
+      </button>
+    </div>
+
+    @if (mode() === 'two-player' && state() === 'setup') {
+      <p class="status" role="status">Two Players selected.</p>
+    }
+
+    <div class="utilities">
+      <app-game-button variant="secondary" (click)="openProfile()">Profile</app-game-button>
+      <app-game-button variant="secondary" (click)="openAchievements()">
+        Achievements
+      </app-game-button>
+      <app-game-button variant="secondary" (click)="openRanking()">Ranking</app-game-button>
+      <app-game-button
+        variant="secondary"
+        popup="dialog"
+        [expanded]="leaderboardOpen()"
+        (click)="openLeaderboard()"
+      >
+        Leaderboard
+      </app-game-button>
+      <app-game-button
+        variant="secondary"
+        popup="dialog"
+        [expanded]="settingsOpen()"
+        (click)="openSettings()"
+      >
+        Settings
+      </app-game-button>
+      <app-game-button
+        variant="secondary"
+        buttonRole="switch"
+        [checked]="soundEnabled()"
+        (click)="toggleSound()"
+      >
+        {{ soundEnabled() ? 'Sound on' : 'Sound off' }}
+      </app-game-button>
+    </div>
+  </section>
+</app-game-background>
+
+@if (settingsOpen()) {
+  <app-settings-modal (closed)="closeSettings()" />
+}
+
+@if (leaderboardOpen()) {
+  <div class="backdrop" (click)="closeLeaderboard()">
+    <app-game-card (click)="$event.stopPropagation()">
+      <div
+        class="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="leaderboard-heading"
+        (keydown)="trapDialogFocus($event)"
+      >
+        <app-leaderboard [entries]="entries()" />
+        <app-game-button #leaderboardClose variant="primary" (click)="closeLeaderboard()">
+          Close
+        </app-game-button>
+      </div>
+    </app-game-card>
+  </div>
+}

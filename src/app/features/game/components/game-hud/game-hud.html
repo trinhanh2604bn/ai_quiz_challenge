@@ -1,0 +1,47 @@
+<section class="hud" aria-label="Match status">
+  <div class="identity">
+    <p class="kicker">Player</p>
+    <p class="player">{{ playerName() }}</p>
+    @if (detail()) {
+      <p class="detail">{{ detail() }}</p>
+    }
+  </div>
+
+  <dl class="stats">
+    <div class="stat score-stat">
+      <dt>Score</dt>
+      <dd>{{ score() }}</dd>
+      <app-score-popup [score]="score()" />
+    </div>
+    <div class="stat streak" [class.hot]="streak() >= 3 || multiplier() > 1">
+      <dt>Streak</dt>
+      <dd>{{ streak() }}<span class="mult"> · {{ multiplier() }}x</span></dd>
+    </div>
+    @if (correctCount() !== null) {
+      <div class="stat">
+        <dt>Correct</dt>
+        <dd>{{ correctCount() }}</dd>
+      </div>
+    }
+  </dl>
+
+  <div class="progress">
+    <div class="meta">
+      <span>Progress</span>
+      <span>{{ progress() }}%</span>
+    </div>
+    <div
+      class="track"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="progress()"
+      aria-label="Match progress"
+    >
+      <div class="fill" [style.width.%]="progress()"></div>
+    </div>
+    @if (questionLabel()) {
+      <p class="step">{{ questionLabel() }}</p>
+    }
+  </div>
+</section>

@@ -1,0 +1,14 @@
+@if (achievement(); as item) {
+  <div class="toast" [class.is-hiding]="hiding()" role="status" aria-live="polite">
+    <app-game-card>
+      <div class="toast-body">
+        <span class="icon" aria-hidden="true">{{ item.icon }}</span>
+        <div class="copy">
+          <p class="kicker">Achievement unlocked</p>
+          <p class="title">{{ item.title }}</p>
+          <p class="game-body">{{ item.description }}</p>
+        </div>
+      </div>
+    </app-game-card>
+  </div>
+}

@@ -62,12 +62,16 @@ Architecture:
 - Angular Signals for quiz, leaderboard, and analytics state
 - Root-provided services
 
-Storage: Browser `localStorage` for the leaderboard only. Quiz progress,
-answer history, and the performance report live in memory for the
-current session.
+Storage: `StorageService` is the only browser `localStorage` gateway.
+Profile, ranking, settings, achievements, and the leaderboard validate
+JSON before use. Corrupt or unreadable values fall back to an empty
+profile, the default season and board, default settings, or an empty
+achievement and leaderboard state. Quiz progress, answer history, and
+the performance report stay in memory for the current session.
 
-Audio: Web Audio API oscillators in `AudioService`. No audio files and
-no extra audio packages.
+Audio: Web Audio API oscillators in `features/game/audio/`. No audio files and
+no extra audio packages. `features/quiz/services/audio.service.ts` re-exports
+that service.
 
 Tests: Jasmine via `ng test`. Analytics report math is covered in
 `analytics.service.spec.ts`.
@@ -104,17 +108,102 @@ src/app/
       performance-report.model.ts
     data/
       questions.data.ts
+  features/game/audio/
+    models/
+      sound-cue.model.ts
+    data/
+      audio-library.data.ts
+    services/
+      audio.service.ts
+  features/game/profile/
+    models/
+      player-profile.model.ts
+    data/
+      avatars.data.ts
+      progression.data.ts
+    services/
+      profile.service.ts
+    components/
+      profile-create/
+      profile-card/
+      xp-bar/
+      profile-page/
+  features/game/ranking/
+    models/
+      season.model.ts
+      ranking-entry.model.ts
+      rank-tier.model.ts
+    data/
+      seasons.data.ts
+      tiers.data.ts
+    services/
+      ranking.service.ts
+    components/
+      ranking-page/
+      rank-badge/
+      season-card/
 ```
 
 Shared styles live in `src/styles.scss`. Components render state and
 emit user actions. Business rules stay in services.
 
+## Design system
+
+Phase 6.1.1 adds reusable visual tokens and three standalone UI
+components. Existing screens still use their own styles. These
+components do not call services or change game state.
+
+Tokens in `src/styles.scss`:
+
+- Colors: `--primary`, `--secondary`, `--accent`, `--success`,
+  `--danger`, `--background`, `--card`, `--text`
+- Typography: `--font-heading`, `--font-body`, `.game-heading`,
+  `.game-body`
+- Spacing: `--space-small`, `--space-medium`, `--space-large`
+
+Components:
+
+- `features/game/components/game-background/` — animated gradient
+  atmosphere and decorative effects
+- `features/game/components/game-button/` — primary and secondary
+  actions, including disabled, hover, and click states
+- `features/game/components/game-card/` — bordered, shadowed container
+  whose padding follows its width (small below 768px, medium from
+  768px, large from 1280px)
+- `features/game/components/game-hud/` — solo match status: player,
+  score, streak, and progress. No services and no scoring rules
+- `features/game/components/player-panel/` — battle player name, score,
+  streak, and active turn. No services and no turn rules
+- `features/game/components/score-popup/` — floating points gain when a
+  displayed score increases
+
+`game-ui.spec.ts` checks the foundation variants and that the composed
+UI does not overflow horizontally at 390px, 768px, and 1280px.
+`gameplay-arena.spec.ts` checks the arena HUD, player panels, timer
+states, answer cards, and the same widths for the solo and battle
+screens.
+
 Routes in `src/app/app.routes.ts`:
 
-- `/` — start screen, category and difficulty selectors, leaderboard
+- `/` — lobby
+- `/profile/create` — nickname and avatar when no profile is stored
+- `/profile` — level, XP, statistics, rank badge, and current rank
+- `/achievements` — unlocked and locked achievements
+- `/ranking` — active season and global, season, and category standings
+- `/setup` — solo category and difficulty
 - `/quiz` — the active question
 - `/result` — score, accuracy, performance dashboard, and save form
+- `/battle/setup` — two-player names, category, and difficulty
+- `/battle` — the battle arena
+- `/battle/result` — battle outcome
 - unknown paths redirect to `/`
+
+Feature screens load lazily with `loadComponent` or `loadChildren`.
+Profile checks use `canMatch`, so a missing profile opens
+`/profile/create` before a feature chunk downloads. Quiz and battle
+access guards live in those lazy route files.
+
+Game routes require a stored profile. A missing profile opens `/profile/create`.
 
 `/quiz` returns home when no session is in progress, and goes to
 `/result` when the session is already completed. `/result` returns home
@@ -138,8 +227,10 @@ Implemented by `StartScreenComponent`, `QuizPageComponent`, and
 
 ## Scoring
 
-Owned by `QuizService`. Displayed by `ScoreBoardComponent` during the
-quiz and `ResultScreenComponent` at the end.
+Owned by `QuizService`. `GameHudComponent` shows the live solo score,
+correct count, streak, and multiplier. `PlayerPanelComponent` shows
+each battle player's score and streak. `ResultScreenComponent` shows
+the final solo score.
 
 - Base points are 10 per correct answer.
 - Points are multiplied by the streak bonus that applies after that
@@ -151,6 +242,7 @@ quiz and `ResultScreenComponent` at the end.
 ## Timer
 
 `TimerComponent` runs a 15-second countdown and emits `timedOut`.
+The ring, warning color, and timeout label are visual only.
 
 - `QuizPageComponent` calls `QuizService.skipQuestion()` for that
   question id.
@@ -162,8 +254,9 @@ quiz and `ResultScreenComponent` at the end.
 
 ### Progress Bar
 
-`ProgressBarComponent` shows completion from `QuizService.progress`
+`GameHudComponent` shows solo completion from `QuizService.progress`
 (answered count over the session length, 100 when completed).
+`ProgressBarComponent` shows that same value on the result screen.
 
 ### Streak Bonus
 
@@ -181,22 +274,59 @@ keeps the best run for the result screen.
 `LeaderboardService` stores the top five scores in `localStorage` under
 `ai-quiz-leaderboard`, highest score first. Ties break by later
 `completedAt`. Blank names are ignored. Invalid stored JSON is treated
-as an empty board. `LeaderboardComponent` renders the list on the start
-and result screens.
+as an empty board. Saved rows may also show the profile avatar and level
+from the moment they were stored. Those fields are display only.
+`LeaderboardComponent` renders the list on the lobby and result screens.
+
+### Ranking
+
+`features/game/ranking/` stores a separate competitive board. The active
+season lives in `localStorage` under `ai-quiz-active-season`. The first
+season is AI Knowledge Season 1. Finished solo and battle results are
+copied into `ai-quiz-ranking` with the player, avatar, level, XP, score,
+category, mode, and season already on hand.
+
+`RankingService` orders that stored board. It does not score answers,
+award XP, calculate levels, unlock achievements, or change the top-five
+leaderboard. Each player appears once. The row is their best score in
+that board, then higher XP, then higher level, then a later recorded
+time. Global covers every season. Season covers the selected season.
+Category covers one category. Tiers from that score are Bronze AI,
+Silver AI, Gold AI, Platinum AI, and Master AI.
+
+The lobby opens `/ranking`. The profile page shows the rank badge and
+current global rank beside the existing level.
 
 ## Audio Feedback
 
-`AudioService` synthesizes short tones. Playback failures are ignored so
-a blocked or missing audio output cannot stop the quiz.
+`AudioService` in `features/game/audio/` synthesizes music and effects
+with the Web Audio API. No audio files and no extra packages.
+`features/quiz/services/audio.service.ts` re-exports that service.
+Playback failures are ignored so a blocked output cannot stop a match.
+
+`SettingsService` persists `soundEnabled` and `volume` (0 to 1) in
+`localStorage` under `ai-quiz-game-settings`. Turning sound off stops
+music and effects. The settings dialog edits both. Background music
+starts after a pointer, key, or click, because browsers block autoplay.
 
 | Event | Caller | Method |
 | --- | --- | --- |
-| Correct answer | `QuizPageComponent` | `playCorrectSound()` |
-| Incorrect answer | `QuizPageComponent` | `playWrongSound()` |
+| Menu music | lobby and setup | `playMenuMusic()` |
+| Quiz music | `QuizPageComponent` | `playQuizMusic()` |
+| Battle music | `BattleArenaComponent` | `playBattleMusic()` |
+| Button click | `GameHomeComponent` | `playButtonClick()` |
+| Setup selection | solo and battle setup | `playSelection()` |
+| Correct answer | quiz and battle | `playCorrectSound()` |
+| Incorrect answer | quiz and battle | `playWrongSound()` |
+| Timeout | `QuizPageComponent` | `playTimeoutSound()` |
 | 5 seconds or fewer left | `TimerComponent` | `playWarningSound()` |
 | Quiz completed | `QuizPageComponent` | `playCompleteSound()` |
+| Turn switch | `BattleArenaComponent` | `playTurnSwitch()` |
+| Victory | `BattleArenaComponent` | `playVictory()` |
+| Achievement unlock | `AchievementPopupComponent` | `playAchievementSound()` |
 
-Warning tones are rate-limited to about one every 900 ms.
+Warning tones are rate-limited to about one every 900 ms. Cue definitions
+live in `audio-library.data.ts`.
 
 ## Answer Feedback Animation
 
@@ -326,22 +456,34 @@ was never set. `QuizState.answerHistory` uses the same type.
 
 ## QuizPageComponent
 
-- Hosts the active question
-- Coordinates timer, score, progress, audio, and the question card
+- Hosts the active question inside the game atmosphere
+- Coordinates timer, HUD, audio, and the question card
 - Waits through answer feedback, then advances
 - Moves to `/result` when the quiz completes
 
 ## QuestionCardComponent
 
-- Displays the question and four answers
+- Displays the question badge, prompt, and four answer cards
 - Emits the selected index
 - Shows correct, incorrect, and reveal states
+
+## GameHudComponent
+
+- Player name, score, streak, multiplier, and progress
+- Presents values it is given. It does not score or advance the quiz
+
+## PlayerPanelComponent
+
+- Player name, score, streak, and whether the turn is active
+- Used by the battle arena. It does not switch turns or record answers
 
 ## ScoreBoardComponent
 
 - Current score
 - Correct-answer count
 - Streak and multiplier
+- Compact stat grid kept in the quiz feature. The arena screens use the
+  HUD and player panels
 
 ## ProgressBarComponent
 
@@ -349,9 +491,9 @@ was never set. `QuizState.answerHistory` uses the same type.
 
 ## TimerComponent
 
-- 15-second countdown display
-- Warning tone in the last five seconds
-- Timeout event
+- 15-second countdown display as a circular ring
+- Warning tone and warning style in the last five seconds
+- Timeout style at zero, then the existing timeout event
 
 ## ResultScreenComponent
 
@@ -377,7 +519,10 @@ was never set. `QuizState.answerHistory` uses the same type.
 
 ## AudioService
 
-- Optional correct, wrong, warning, and completion tones
+- Menu, quiz, and battle music, plus UI, answer, timeout, turn, victory,
+  and achievement cues
+- Master volume and mute from `SettingsService`
+- Gesture unlock for browser autoplay limits
 
 ## AnalyticsService
 
@@ -389,6 +534,24 @@ was never set. `QuizState.answerHistory` uses the same type.
 
 - Reads and writes top scores in `localStorage`
 - Keeps at most five entries, highest score first
+- Stores an optional avatar and level for display
+
+## ProfileService
+
+- Creates, loads, and saves the player profile in `localStorage` under
+  `ai-player-profile`
+- Updates XP, level, and statistics after a quiz, a battle, or an
+  achievement unlock
+- Does not score answers, run the timer, choose questions, unlock
+  achievements, or rank the leaderboard
+
+## RankingService
+
+- Reads and writes the active season and ranking rows in `localStorage`
+- Builds global, season, and category standings from stored results
+- Assigns a tier from the stored score
+- Does not score answers, award XP, calculate levels, unlock
+  achievements, or change leaderboard order
 
 # Development Commands
 
@@ -483,6 +646,7 @@ hide failing checks or leave them for a later phase.
 Always:
 
 - Use standalone components
+- Use OnPush change detection
 - Use strict TypeScript typing
 - Use dependency injection
 - Separate UI and business logic
@@ -630,6 +794,138 @@ Each attempt is stored as an `AnswerRecord`. `AnalyticsService` turns
 that history into a `PerformanceReport`, and
 `PerformanceDashboardComponent` shows it on the result screen.
 
+## Design System Foundation
+
+Global tokens and `GameBackgroundComponent`, `GameButtonComponent`, and
+`GameCardComponent` provide a shared visual layer. Screens are not
+restyled in this phase, and quiz, battle, timer, score, and leaderboard
+logic stay unchanged.
+
+## Main Menu and Setup Redesign
+
+The lobby, single-player setup, and battle setup use the shared
+background, cards, and buttons. Solo Quest opens `/setup`. Battle Arena
+opens `/battle/setup`. Category and difficulty choices are cards with an
+active border, glow, and scale. Battle setup shows player cards and a VS
+mark. Entrance, hover, selection, and button motion stop under
+`prefers-reduced-motion`. Start and battle-creation behavior stay the
+same.
+
+## Achievements
+
+`features/game/achievements/` records unlocks in `localStorage` under
+`ai-quiz-achievements`. `AchievementService` reads quiz results, battle
+results, scores, and streaks that the quiz and battle flows already
+store. It does not calculate points, change the timer, choose questions,
+or rank the leaderboard.
+
+The lobby opens `/achievements`. `AchievementPopupComponent` is mounted
+beside the router outlet and announces each new unlock. A repeated quiz
+`completedAt` or battle signature does not count twice.
+
+Unlocks:
+
+- First Step: finish 1 solo quiz
+- AI Explorer: finish solo quizzes in 3 categories
+- AI Specialist: finish a solo quiz in all 5 categories
+- Knowledge Master: solo accuracy of at least 80%
+- Perfect Mind: every solo question correct
+- High Score: a session score of at least 100
+- Hot Streak: streak of 3
+- Unstoppable: streak of 5
+- Hard Mode: finish a solo quiz on Hard
+- First Battle: finish 1 battle
+- Champion: win 1 battle
+- Rival Slayer: win 3 battles
+
+## Gameplay Arena UI
+
+Phase 6.1.3 restyles the solo quiz and the battle arena. `GameHudComponent`
+shows the solo player, score, streak, and progress. `PlayerPanelComponent`
+shows both battle players, with a VS mark and a turn heading between
+turns. The question card uses a gradient surface, a question badge, and
+answer cards. The timer is a circular ring with warning and timeout
+styles. Answer selection, correct, wrong, score-gain, question-enter,
+and device-pass motion stop under `prefers-reduced-motion`.
+
+Quiz scoring, battle turn changes, the 15-second countdown, answer
+checks, and leaderboard storage stay in their existing services.
+
+## Audio and Immersive Experience
+
+Phase 6.2 adds `features/game/audio/` with cue models, a synthesized
+library, and the upgraded `AudioService`. Menu, quiz, and battle music
+loop until the scene changes or sound is turned off. Lobby buttons, setup
+choices, quiz answers, quiz timeouts, battle turn changes, victory, and
+achievement popups play cues from the screens that already own those
+moments. Scoring, turn rules, the 15-second countdown, question selection,
+achievement rules, and leaderboard ranking stay in their existing services.
+
+## Player Profile and Progression
+
+Phase 6.4 adds `features/game/profile/`. The profile stores a nickname,
+avatar, level, experience, statistics, and timestamps in `localStorage`
+under `ai-player-profile`.
+
+XP awards:
+
+- 50 for completing a quiz
+- 10 for each correct answer in that quiz or in the local battle seat
+- 100 extra for a perfect quiz
+- 80 when player 1 wins a battle
+- 25 for each newly unlocked achievement
+
+Level is `floor(experience / 100) + 1`. A repeated quiz `completedAt`,
+battle signature, or achievement id is ignored.
+
+Wins and losses are battle results for player 1. A draw counts as a
+battle without either result. Solo quizzes increment solo games and total
+games. Accuracy is the rounded percentage of correct answers. The favorite
+category is the one played most often; a tie keeps the current favorite.
+
+The first launch opens `/profile/create`. The lobby opens `/profile`.
+Leaderboard rows can show the avatar and level saved with that score.
+Ranking stays highest score, then later `completedAt`.
+
+Quiz scoring, battle scoring, the timer, question selection, achievement
+unlock rules, and leaderboard ranking stay in their existing services.
+
+## Advanced Ranking and Seasons
+
+Phase 6.5 adds `features/game/ranking/`. A finished solo quiz or battle
+copies the score, category, mode, and the profile's avatar, level, and
+XP into the ranking board for the active season. The default season is
+AI Knowledge Season 1.
+
+Standings are global, season, and category. A player's row is their best
+stored score in that board. Ties prefer higher XP, then higher level,
+then a later recorded time. Tiers are Bronze AI, Silver AI, Gold AI,
+Platinum AI, and Master AI, from that score. The ranking page shows the
+season card and those boards. The profile keeps its level and adds the
+rank badge and current global rank.
+
+Quiz scoring, battle scoring, XP, level, achievement rules, and the
+top-five leaderboard stay in their existing services.
+
+## Production Optimization
+
+Phase 7.1 prepares the release build without changing quiz rules, battle
+rules, scoring, XP, ranking order, achievement rules, or audio cues.
+
+- Routes load their screens on demand. The question bank stays out of
+  the initial bundle until setup, quiz, result, or battle is opened.
+- Standalone screens use OnPush. Quiz, battle, profile, ranking, and
+  settings state stays in signals and computed values.
+- Timers, popup delays, score popups, and audio unlock listeners are
+  removed when their owner is destroyed or after the first unlock gesture.
+- `StorageService` reads and writes JSON. Domain services still validate
+  profile, ranking, settings, achievement, and leaderboard payloads.
+- `AppErrorHandler` records a recovery banner. A failed lazy navigation
+  returns to the lobby instead of leaving the outlet blank.
+- Profile `canMatch` guards still send a missing profile to
+  `/profile/create`. Quiz and battle guards repeat the access checks
+  those screens already perform in `ngOnInit`.
+
 # Evaluation Criteria
 
 ## Quiz Flow (25 points)
@@ -744,10 +1040,12 @@ Files:
 ## Audio Feedback
 
 - AudioService
-- Called from QuizPageComponent and TimerComponent
+- Settings volume and mute
+- Called from the lobby, setup, quiz, battle, timer, and achievement popup
 
-File:
+Files:
 
+- `src/app/features/game/audio/`
 - `src/app/features/quiz/services/audio.service.ts`
 
 ## Answer Feedback Animation

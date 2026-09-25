@@ -1,0 +1,137 @@
+:host {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 100vh;
+}
+
+app-game-background {
+  display: block;
+  min-height: 100vh;
+}
+
+.arena {
+  display: grid;
+  gap: var(--space-medium);
+  width: min(72rem, 100%);
+  margin: 0 auto;
+  padding: var(--space-medium) var(--space-medium) var(--space-large);
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.turn-head h1,
+.step,
+.bonus,
+.session {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.turn-indicator {
+  font-family: var(--font-heading);
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.step,
+.bonus,
+.session {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.step,
+.bonus {
+  margin-top: 0.35rem;
+}
+
+.bonus {
+  color: var(--primary);
+}
+
+.duel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-small);
+  align-items: center;
+  min-width: 0;
+}
+
+.vs {
+  justify-self: center;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  animation: vs-pop 400ms ease both;
+}
+
+.round {
+  display: grid;
+  gap: var(--space-small);
+  min-width: 0;
+  animation: arena-enter 380ms ease both;
+}
+
+.round-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-small);
+  min-width: 0;
+}
+
+.session {
+  min-width: 0;
+  color: var(--primary);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@container (min-width: 640px) {
+  .duel {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+}
+
+@keyframes arena-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes vs-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .round,
+  .vs {
+    animation: none;
+  }
+}

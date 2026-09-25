@@ -1,0 +1,50 @@
+<app-game-background>
+  <section class="create" aria-labelledby="create-profile-title">
+    <header class="hero">
+      <p class="eyebrow">First launch</p>
+      <h1 id="create-profile-title" class="game-heading">Create your profile</h1>
+      <p class="game-body lead">Choose a nickname and an avatar. This stays on this device.</p>
+    </header>
+
+    <app-game-card>
+      <form (submit)="$event.preventDefault(); createProfile()">
+        <label class="nickname" for="profile-nickname">
+          Nickname
+          <input
+            id="profile-nickname"
+            type="text"
+            name="nickname"
+            autocomplete="nickname"
+            [attr.maxlength]="nicknameMax"
+            [value]="nickname()"
+            (input)="updateNickname($event)"
+          />
+        </label>
+        <p class="hint">Up to {{ nicknameMax }} characters.</p>
+
+        <div class="avatars" role="group" aria-label="Avatar">
+          @for (avatar of avatars; track avatar.id) {
+            <button
+              type="button"
+              class="avatar"
+              [class.is-selected]="avatarId() === avatar.id"
+              [attr.aria-pressed]="avatarId() === avatar.id"
+              (click)="selectAvatar(avatar.id)"
+            >
+              <span class="glyph" aria-hidden="true">{{ avatar.glyph }}</span>
+              <span class="label">{{ avatar.label }}</span>
+            </button>
+          }
+        </div>
+
+        @if (rejected()) {
+          <p class="error" role="alert">Choose a nickname and an avatar to continue.</p>
+        }
+
+        <app-game-button variant="primary" type="submit" [disabled]="!canCreate()">
+          Create profile
+        </app-game-button>
+      </form>
+    </app-game-card>
+  </section>
+</app-game-background>

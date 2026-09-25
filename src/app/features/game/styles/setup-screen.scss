@@ -1,0 +1,237 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+app-game-background {
+  display: block;
+  min-height: 100vh;
+}
+
+.setup {
+  display: grid;
+  gap: var(--space-medium);
+  width: min(52rem, 100%);
+  margin: 0 auto;
+  padding: var(--space-medium) var(--space-medium) var(--space-large);
+  animation: stage-enter 420ms ease both;
+}
+
+h1 {
+  margin: 0;
+}
+
+.lead,
+.hint {
+  margin: var(--space-small) 0 0;
+  color: var(--muted);
+}
+
+.lead {
+  max-width: 40rem;
+}
+
+.selector {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.selector legend {
+  margin-bottom: var(--space-small);
+  padding: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.choices {
+  display: grid;
+  gap: var(--space-small);
+  min-width: 0;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
+  min-height: 4.25rem;
+  padding: 0.8rem 0.9rem;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-weight: 800;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+
+.choice::before {
+  content: "";
+  flex: 0 0 2.4rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.75rem;
+  background: var(--accent-soft);
+}
+
+.choice[data-choice='Machine Learning']::before {
+  background: #dbeafe;
+}
+
+.choice[data-choice='Deep Learning']::before {
+  background: #ede9fe;
+}
+
+.choice[data-choice='Generative AI']::before {
+  background: #fce7f3;
+}
+
+.choice[data-choice='Prompt Engineering']::before {
+  background: #ffedd5;
+}
+
+.choice[data-choice='Easy']::before {
+  background: #d1fae5;
+}
+
+.choice[data-choice='Medium']::before {
+  background: #fef3c7;
+}
+
+.choice[data-choice='Hard']::before {
+  background: #fee2e2;
+}
+
+.choice:hover:not(.is-selected) {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.choice.is-selected {
+  border-color: var(--primary);
+  background: var(--accent-soft);
+  color: var(--primary);
+  box-shadow:
+    0 0 0 3px var(--accent-ring),
+    0 0 22px color-mix(in srgb, var(--primary) 42%, transparent);
+  transform: scale(1.03);
+  animation: choice-select 220ms ease;
+}
+
+.difficulties {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.difficulties .choice {
+  justify-content: center;
+  padding: 0.7rem 0.35rem;
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+.difficulties .choice::before {
+  display: none;
+}
+
+.notice {
+  margin: 0;
+  padding: 0.85rem var(--space-medium);
+  border-radius: var(--radius-sm);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.actions {
+  display: grid;
+  gap: var(--space-small);
+  min-width: 0;
+}
+
+.actions app-game-button {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+
+@keyframes stage-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes choice-select {
+  from {
+    transform: scale(0.97);
+  }
+
+  to {
+    transform: scale(1.03);
+  }
+}
+
+@media (min-width: 768px) {
+  .setup {
+    padding-top: var(--space-large);
+  }
+
+  .choices:not(.difficulties) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .difficulties .choice {
+    padding: 0.8rem 0.9rem;
+    font-size: inherit;
+  }
+
+  .difficulties .choice::before {
+    display: block;
+  }
+
+  .actions {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .actions app-game-button:first-child {
+    width: auto;
+    min-width: 7.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .choices:not(.difficulties) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .setup,
+  .choice,
+  .choice.is-selected {
+    animation: none;
+    transition: none;
+  }
+
+  .choice:hover,
+  .choice.is-selected,
+  .choice:active {
+    transform: none;
+  }
+}

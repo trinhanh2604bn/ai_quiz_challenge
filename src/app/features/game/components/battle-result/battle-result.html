@@ -1,0 +1,51 @@
+<section class="screen">
+  <div class="panel result">
+    <p class="eyebrow">Two players</p>
+    <h1>Battle complete</h1>
+    @if (session(); as session) {
+      <p class="outcome" role="status">{{ outcome() }}</p>
+      <ul class="scores">
+        @for (player of session.players; track player.id) {
+          <li [class.is-winner]="winner()?.id === player.id">
+            <h2>{{ player.name }}</h2>
+            <dl class="stats">
+              <div>
+                <dt>Score</dt>
+                <dd>{{ player.score }}</dd>
+              </div>
+              <div>
+                <dt>Correct answers</dt>
+                <dd>{{ player.correctAnswers }} / {{ totalQuestions() }}</dd>
+              </div>
+              <div>
+                <dt>Accuracy</dt>
+                <dd>{{ accuracyFor(player.correctAnswers) }}%</dd>
+              </div>
+              <div>
+                <dt>Best streak</dt>
+                <dd>{{ player.bestStreak }}</dd>
+              </div>
+            </dl>
+          </li>
+        }
+      </ul>
+    }
+
+    <div class="actions">
+      <button type="button" class="btn btn-primary" (click)="playAgain()">Play again</button>
+      <button type="button" class="btn btn-secondary" (click)="exitBattle()">Exit</button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        [attr.aria-expanded]="leaderboardOpen()"
+        (click)="toggleLeaderboard()"
+      >
+        Leaderboard
+      </button>
+    </div>
+  </div>
+
+  @if (leaderboardOpen()) {
+    <app-leaderboard [entries]="entries()" />
+  }
+</section>

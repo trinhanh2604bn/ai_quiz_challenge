@@ -1,9 +1,10 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Question } from '../../models/question.model';
 
 type AnswerOptionState = 'default' | 'correct' | 'incorrect' | 'reveal';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-question-card',
   imports: [],
   templateUrl: './question-card.html',
@@ -14,6 +15,7 @@ export class QuestionCardComponent {
 
   readonly question = input.required<Question>();
   readonly selectedIndex = input<number | null>(null);
+  readonly badge = input('');
   readonly answerSelected = output<number>();
 
   isLocked(): boolean {

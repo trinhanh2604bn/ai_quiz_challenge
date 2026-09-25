@@ -1,0 +1,15 @@
+<article class="player" [class.is-active]="active()">
+  <p class="turn">{{ active() ? 'Active turn' : 'Waiting' }}</p>
+  <h2>{{ name() }}</h2>
+  <dl>
+    <div class="score-stat">
+      <dt>Score</dt>
+      <dd>{{ score() }}</dd>
+      <app-score-popup [score]="score()" />
+    </div>
+    <div class="streak" [class.hot]="streak() >= 3">
+      <dt>Streak</dt>
+      <dd>{{ streak() }}</dd>
+    </div>
+  </dl>
+</article>

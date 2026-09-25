@@ -1,0 +1,85 @@
+:host {
+  display: block;
+}
+
+.result h1,
+.scores h2 {
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+.result h1 {
+  font-size: clamp(1.8rem, 6vw, 2.4rem);
+}
+
+.outcome {
+  margin: 0.85rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.scores {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scores li {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.scores h2 {
+  font-size: 1.15rem;
+}
+
+.scores .is-winner {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem 0.75rem;
+  margin: 0;
+}
+
+.stats dt {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.stats dd {
+  margin: 0.15rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+app-leaderboard {
+  display: block;
+  margin-top: 1rem;
+}
+
+@media (max-width: 420px) {
+  .actions .btn {
+    width: 100%;
+  }
+}

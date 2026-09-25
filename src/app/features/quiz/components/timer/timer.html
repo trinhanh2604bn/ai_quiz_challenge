@@ -1,14 +1,31 @@
 <div
   class="timer"
-  [class.urgent]="secondsLeft() <= 5"
+  [class.urgent]="secondsLeft() > 0 && secondsLeft() <= 5"
+  [class.timeout]="secondsLeft() === 0"
   role="timer"
   [attr.aria-label]="'Time remaining: ' + secondsLeft() + ' seconds'"
 >
-  <div class="timer-top">
-    <span>Time left</span>
+  <div class="ring" aria-hidden="true">
+    <svg viewBox="0 0 72 72">
+      <circle class="track" cx="36" cy="36" r="30"></circle>
+      <circle
+        class="progress"
+        cx="36"
+        cy="36"
+        r="30"
+        [attr.stroke-dasharray]="ringLength"
+        [attr.stroke-dashoffset]="dashOffset()"
+      ></circle>
+    </svg>
     <strong>{{ secondsLeft() }}s</strong>
   </div>
-  <div class="meter" aria-hidden="true">
-    <div class="meter-fill" [style.width.%]="fillPercent()"></div>
-  </div>
+  <span class="label">
+    @if (secondsLeft() === 0) {
+      Time up
+    } @else if (secondsLeft() <= 5) {
+      Hurry
+    } @else {
+      Time left
+    }
+  </span>
 </div>

@@ -16,6 +16,27 @@
   --shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
   --radius: 16px;
   --radius-sm: 12px;
+
+  --primary: #4338ca;
+  --secondary: #334155;
+  --success: #047857;
+  --background: #f3f4f8;
+  --card: #ffffff;
+  --text: #0f172a;
+
+  --font-heading: "Segoe UI", system-ui, sans-serif;
+  --font-body: "Segoe UI", system-ui, sans-serif;
+  --heading-size: clamp(1.5rem, 4vw, 2.25rem);
+  --heading-weight: 800;
+  --heading-line-height: 1.15;
+  --body-size: 1rem;
+  --body-weight: 400;
+  --body-line-height: 1.5;
+
+  --space-small: 0.5rem;
+  --space-medium: 1rem;
+  --space-large: 1.5rem;
+
   color-scheme: light;
 }
 
@@ -180,4 +201,27 @@ button {
   .fill {
     transition: none;
   }
+}
+
+.game-heading {
+  max-width: 100%;
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-size: var(--heading-size);
+  font-weight: var(--heading-weight);
+  line-height: var(--heading-line-height);
+  letter-spacing: -0.03em;
+  overflow-wrap: anywhere;
+}
+
+.game-body {
+  max-width: 100%;
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  font-weight: var(--body-weight);
+  line-height: var(--body-line-height);
+  overflow-wrap: anywhere;
 }

@@ -1,10 +1,11 @@
-<article>
+<article class="prompt">
+  <p class="badge">{{ badge() || question().category }}</p>
   <h2>{{ question().text }}</h2>
   <div class="options" role="group" aria-label="Answer options">
     @for (option of question().options; track $index) {
       <button
         type="button"
-        class="option"
+        class="option answer-card"
         [class.correct]="optionState($index) === 'correct'"
         [class.incorrect]="optionState($index) === 'incorrect'"
         [class.reveal]="optionState($index) === 'reveal'"

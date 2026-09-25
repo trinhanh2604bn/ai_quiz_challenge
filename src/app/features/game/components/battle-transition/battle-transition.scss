@@ -1,0 +1,68 @@
+:host {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.pass {
+  width: min(36rem, 100%);
+  margin: 0 auto;
+  min-width: 0;
+  text-align: center;
+}
+
+.handoff {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  min-width: 0;
+  animation: handoff-enter 420ms ease both;
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin: 0.35rem 0;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+h1,
+.lead {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.lead {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+}
+
+.continue {
+  margin-top: 1.5rem;
+  min-width: min(10rem, 100%);
+  max-width: 100%;
+}
+
+@keyframes handoff-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .handoff {
+    animation: none;
+  }
+}

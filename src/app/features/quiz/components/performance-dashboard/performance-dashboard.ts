@@ -1,7 +1,8 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { PerformanceGroup, PerformanceReport } from '../../models/performance-report.model';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-performance-dashboard',
   imports: [],
   templateUrl: './performance-dashboard.html',

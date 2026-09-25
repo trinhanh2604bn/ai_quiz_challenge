@@ -8,6 +8,13 @@ import { QuizStatus } from '../models/quiz-state.model';
 const POINTS_PER_CORRECT_ANSWER = 10;
 const SESSION_QUESTION_COUNT = 10;
 
+export interface AttemptScore {
+  score: number;
+  correctAnswers: number;
+  streak: number;
+  bestStreak: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -51,13 +58,47 @@ export class QuizService {
     return this.matchingQuestions(category, difficulty).length >= SESSION_QUESTION_COUNT;
   }
 
-  startQuiz(category: QuestionCategory, difficulty: Difficulty): boolean {
+  drawQuestions(category: QuestionCategory, difficulty: Difficulty): readonly Question[] | null {
     const matching = this.matchingQuestions(category, difficulty);
     if (matching.length < SESSION_QUESTION_COUNT) {
-      return false;
+      return null;
     }
 
-    const selected = this.shuffle(matching).slice(0, SESSION_QUESTION_COUNT);
+    return this.shuffle(matching).slice(0, SESSION_QUESTION_COUNT);
+  }
+
+  isCorrectSelection(correctIndex: 0 | 1 | 2 | 3, selectedAnswer: number | null): boolean {
+    return selectedAnswer === correctIndex;
+  }
+
+  streakMultiplier(streak: number): number {
+    return this.multiplierFor(streak);
+  }
+
+  scoreAttempt(current: AttemptScore, isCorrect: boolean): AttemptScore {
+    if (!isCorrect) {
+      return {
+        score: current.score,
+        correctAnswers: current.correctAnswers,
+        streak: 0,
+        bestStreak: current.bestStreak,
+      };
+    }
+
+    const streak = current.streak + 1;
+    return {
+      score: current.score + POINTS_PER_CORRECT_ANSWER * this.multiplierFor(streak),
+      correctAnswers: current.correctAnswers + 1,
+      streak,
+      bestStreak: Math.max(current.bestStreak, streak),
+    };
+  }
+
+  startQuiz(category: QuestionCategory, difficulty: Difficulty): boolean {
+    const selected = this.drawQuestions(category, difficulty);
+    if (!selected) {
+      return false;
+    }
 
     this.categoryState.set(category);
     this.difficultyState.set(difficulty);
@@ -95,19 +136,11 @@ export class QuizService {
       return;
     }
 
-    if (optionIndex === question.correctIndex) {
-      const nextStreak = this.streakState() + 1;
-      const points = POINTS_PER_CORRECT_ANSWER * this.multiplierFor(nextStreak);
-      this.streakState.set(nextStreak);
-      this.maxStreakState.update((maxStreak) => Math.max(maxStreak, nextStreak));
-      this.correctCountState.update((count) => count + 1);
-      this.scoreState.update((score) => score + points);
-    } else {
-      this.streakState.set(0);
-    }
+    const isCorrect = this.isCorrectSelection(question.correctIndex, optionIndex);
+    this.applyAttemptScore(this.scoreAttempt(this.currentAttemptScore(), isCorrect));
 
     this.selectedAnswers.update((answers) => [...answers, optionIndex]);
-    this.recordAttempt(question, optionIndex, optionIndex === question.correctIndex);
+    this.recordAttempt(question, optionIndex, isCorrect);
   }
 
   markQuestionDisplayed(questionId: string): void {
@@ -147,7 +180,7 @@ export class QuizService {
     }
 
     this.lockTransition();
-    this.streakState.set(0);
+    this.applyAttemptScore(this.scoreAttempt(this.currentAttemptScore(), false));
     this.selectedAnswers.update((answers) => [...answers, null]);
     const question = this.questions()[this.currentIndex()];
     if (question) {
@@ -221,6 +254,22 @@ export class QuizService {
     }
 
     return Math.round((this.selectedAnswers().length / totalQuestions) * 100);
+  }
+
+  private currentAttemptScore(): AttemptScore {
+    return {
+      score: this.scoreState(),
+      correctAnswers: this.correctCountState(),
+      streak: this.streakState(),
+      bestStreak: this.maxStreakState(),
+    };
+  }
+
+  private applyAttemptScore(next: AttemptScore): void {
+    this.scoreState.set(next.score);
+    this.correctCountState.set(next.correctAnswers);
+    this.streakState.set(next.streak);
+    this.maxStreakState.set(next.bestStreak);
   }
 
   private multiplierFor(streak: number): number {

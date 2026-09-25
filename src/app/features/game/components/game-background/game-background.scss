@@ -1,0 +1,111 @@
+:host {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--text);
+  background: var(--background);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.wash {
+  position: absolute;
+  inset: 0;
+  background-color: var(--background);
+  background-image:
+    radial-gradient(
+      circle at 18% 20%,
+      color-mix(in srgb, var(--primary) 24%, transparent),
+      transparent 46%
+    ),
+    radial-gradient(
+      circle at 86% 12%,
+      color-mix(in srgb, var(--accent) 20%, transparent),
+      transparent 42%
+    ),
+    linear-gradient(
+      165deg,
+      var(--background),
+      color-mix(in srgb, var(--primary) 8%, var(--background))
+    );
+  background-size: 160% 160%;
+  animation: game-bg-drift 18s ease-in-out infinite alternate;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.45;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--primary) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--primary) 7%, transparent) 1px, transparent 1px);
+  background-size: 2.75rem 2.75rem;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(10px);
+  opacity: 0.7;
+}
+
+.orb-one {
+  top: 6%;
+  left: 4%;
+  width: 34%;
+  aspect-ratio: 1;
+  background: color-mix(in srgb, var(--primary) 35%, #fff);
+  animation: game-bg-float 12s ease-in-out infinite alternate;
+}
+
+.orb-two {
+  top: 8%;
+  right: 5%;
+  width: 26%;
+  aspect-ratio: 1;
+  background: color-mix(in srgb, var(--accent) 28%, #fff);
+  animation: game-bg-float 15s ease-in-out infinite alternate-reverse;
+}
+
+.stage {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  max-width: 100%;
+}
+
+@keyframes game-bg-drift {
+  from {
+    background-position: 0% 40%;
+  }
+
+  to {
+    background-position: 100% 60%;
+  }
+}
+
+@keyframes game-bg-float {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(4%, 8%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wash,
+  .orb-one,
+  .orb-two {
+    animation: none;
+  }
+}

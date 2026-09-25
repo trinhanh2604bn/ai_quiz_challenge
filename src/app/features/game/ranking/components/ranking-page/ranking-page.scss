@@ -1,0 +1,135 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+app-game-background {
+  display: block;
+  min-height: 100vh;
+}
+
+.ranking {
+  width: min(52rem, 100%);
+  margin: 0 auto;
+  padding: var(--space-medium) var(--space-medium) var(--space-large);
+}
+
+.hero,
+.copy,
+.meta,
+.name {
+  min-width: 0;
+}
+
+.lead,
+.empty {
+  margin-top: var(--space-small);
+  color: var(--muted);
+}
+
+.ranking > app-game-card,
+.board app-game-card {
+  display: block;
+  min-width: 0;
+}
+
+.boards,
+.categories {
+  display: grid;
+  gap: var(--space-small);
+  margin-top: var(--space-medium);
+  min-width: 0;
+}
+
+.boards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.boards button,
+.category {
+  min-width: 0;
+  min-height: 44px;
+  padding: var(--space-small);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.boards button[aria-pressed='true'],
+.category.is-selected {
+  border-color: var(--primary);
+  background: var(--accent-soft);
+  color: var(--primary);
+}
+
+.categories {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+}
+
+.board {
+  display: grid;
+  gap: var(--space-medium);
+  margin: var(--space-medium) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-small) var(--space-medium);
+  min-width: 0;
+}
+
+.place {
+  flex: 0 0 auto;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.copy {
+  display: flex;
+  flex: 1 1 10rem;
+  flex-direction: column;
+}
+
+.name {
+  overflow-wrap: anywhere;
+  font-weight: 800;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.is-current app-game-card {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.ranking > app-game-button {
+  display: flex;
+  width: min(16rem, 100%);
+  margin-top: var(--space-medium);
+}

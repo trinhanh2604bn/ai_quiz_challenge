@@ -1,3 +1,10 @@
+@if (showRecovery()) {
+  <div class="app-recovery" role="alert">
+    <p>This screen could not be loaded.</p>
+    <a routerLink="/" (click)="dismissRecovery()">Back to lobby</a>
+  </div>
+}
 <main>
   <router-outlet />
 </main>
+<app-achievement-popup />

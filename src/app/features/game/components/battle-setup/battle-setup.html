@@ -1,0 +1,109 @@
+<app-game-background>
+  <section
+    class="setup"
+    [attr.data-game-mode]="mode() ?? 'none'"
+    [attr.data-game-state]="state()"
+  >
+    <header>
+      <app-game-card>
+        <p class="eyebrow">Two players</p>
+        <h1 class="game-heading">Battle setup</h1>
+        <p class="game-body lead">
+          Name both players, then choose a category and a difficulty. The battle uses
+          {{ sessionQuestionCount }} questions.
+        </p>
+      </app-game-card>
+    </header>
+
+    <div class="versus">
+      <app-game-card>
+        <p class="player-kicker">Player 1</p>
+        <label class="name" for="player-one-name">
+          Player 1 name
+          <input
+            id="player-one-name"
+            type="text"
+            name="player-one"
+            autocomplete="off"
+            [value]="playerOneName()"
+            (input)="updatePlayerOneName($event)"
+          />
+        </label>
+      </app-game-card>
+
+      <p class="vs" aria-hidden="true">VS</p>
+
+      <app-game-card>
+        <p class="player-kicker">Player 2</p>
+        <label class="name" for="player-two-name">
+          Player 2 name
+          <input
+            id="player-two-name"
+            type="text"
+            name="player-two"
+            autocomplete="off"
+            [value]="playerTwoName()"
+            (input)="updatePlayerTwoName($event)"
+          />
+        </label>
+      </app-game-card>
+    </div>
+
+    <app-game-card>
+      <fieldset class="selector">
+        <legend>Category</legend>
+        <div class="choices">
+          @for (item of categories; track item) {
+            <button
+              type="button"
+              class="choice"
+              [class.is-selected]="category() === item"
+              [attr.aria-pressed]="category() === item"
+              [attr.data-choice]="item"
+              (click)="selectCategory(item)"
+            >
+              {{ item }}
+            </button>
+          }
+        </div>
+      </fieldset>
+    </app-game-card>
+
+    <app-game-card>
+      <fieldset class="selector">
+        <legend>Difficulty</legend>
+        <div class="choices difficulties">
+          @for (item of difficulties; track item) {
+            <button
+              type="button"
+              class="choice"
+              [class.is-selected]="difficulty() === item"
+              [attr.aria-pressed]="difficulty() === item"
+              [attr.data-choice]="item"
+              (click)="selectDifficulty(item)"
+            >
+              {{ item }}
+            </button>
+          }
+        </div>
+      </fieldset>
+    </app-game-card>
+
+    @if (unavailable()) {
+      <p class="notice" role="alert">No questions available for this challenge.</p>
+    } @else if (sessionReady()) {
+      <p class="hint" role="status">Battle session created. Waiting to start.</p>
+    } @else if (!canStart()) {
+      <p class="hint">Enter both names and select a category and a difficulty.</p>
+    } @else {
+      <p class="hint">Ready to start {{ sessionQuestionCount }} questions.</p>
+    }
+
+    <div class="actions">
+      <app-game-button variant="secondary" (click)="goBack()">Back</app-game-button>
+      <app-game-button variant="primary" [disabled]="!canStart()" (click)="createSession()">
+        Start Battle
+      </app-game-button>
+    </div>
+  </section>
+</app-game-background>

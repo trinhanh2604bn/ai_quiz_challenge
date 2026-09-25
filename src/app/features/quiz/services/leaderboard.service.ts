@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { StorageService } from '../../../core/storage/storage.service';
 import { LeaderboardEntry } from '../models/leaderboard-entry.model';
 
 const STORAGE_KEY = 'ai-quiz-leaderboard';
@@ -8,6 +9,7 @@ const MAX_ENTRIES = 5;
   providedIn: 'root',
 })
 export class LeaderboardService {
+  private readonly storage = inject(StorageService);
   private readonly entriesState = signal<readonly LeaderboardEntry[]>(this.readStoredEntries());
 
   readonly entries = this.entriesState.asReadonly();
@@ -23,36 +25,22 @@ export class LeaderboardService {
       .slice(0, MAX_ENTRIES);
 
     this.entriesState.set(nextEntries);
-    this.writeStoredEntries(nextEntries);
+    this.storage.writeJson(STORAGE_KEY, nextEntries);
   }
 
   private readStoredEntries(): LeaderboardEntry[] {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        return [];
-      }
-
-      const parsed: unknown = JSON.parse(raw);
+    const stored = this.storage.readJson(STORAGE_KEY, (parsed): LeaderboardEntry[] | null => {
       if (!Array.isArray(parsed)) {
-        return [];
+        return null;
       }
 
       return parsed
         .filter(isLeaderboardEntry)
+        .map(normalizeEntry)
         .sort((left, right) => right.score - left.score || right.completedAt - left.completedAt)
         .slice(0, MAX_ENTRIES);
-    } catch {
-      return [];
-    }
-  }
-
-  private writeStoredEntries(entries: readonly LeaderboardEntry[]): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    } catch {
-      return;
-    }
+    });
+    return stored.value ?? [];
   }
 }
 
@@ -68,4 +56,17 @@ function isLeaderboardEntry(value: unknown): value is LeaderboardEntry {
     typeof entry['accuracy'] === 'number' &&
     typeof entry['completedAt'] === 'number'
   );
+}
+
+function normalizeEntry(entry: LeaderboardEntry): LeaderboardEntry {
+  if (entry.mode === 'single-player' || entry.mode === 'two-player') {
+    return entry;
+  }
+
+  if (entry.mode === undefined) {
+    return entry;
+  }
+
+  const { mode: _mode, ...rest } = entry;
+  return rest;
 }

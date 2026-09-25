@@ -1,0 +1,11 @@
+<div
+  class="track"
+  role="progressbar"
+  aria-label="Experience toward the next level"
+  [attr.aria-valuemin]="0"
+  [attr.aria-valuemax]="progress().span"
+  [attr.aria-valuenow]="progress().intoLevel"
+>
+  <span class="fill" [style.width.%]="progress().percent"></span>
+</div>
+<p class="caption">{{ progress().intoLevel }} / {{ progress().span }} XP</p>

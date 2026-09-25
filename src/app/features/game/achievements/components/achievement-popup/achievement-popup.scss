@@ -1,0 +1,103 @@
+.toast {
+  position: fixed;
+  top: var(--space-medium);
+  left: 50%;
+  z-index: 40;
+  width: min(22rem, calc(100vw - 2rem));
+  transform: translateX(-50%);
+  animation: achievement-in 420ms ease;
+  pointer-events: none;
+}
+
+.toast.is-hiding {
+  animation: achievement-out 320ms ease forwards;
+}
+
+.toast app-game-card {
+  display: block;
+  border-radius: var(--radius);
+  animation: achievement-glow 1.4s ease-in-out infinite;
+}
+
+.toast-body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-medium);
+  min-width: 0;
+}
+
+.icon {
+  flex: 0 0 auto;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.copy {
+  min-width: 0;
+}
+
+.kicker {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0.15rem 0 0;
+  color: var(--text);
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.copy .game-body {
+  margin-top: 0.2rem;
+  color: var(--muted);
+}
+
+@keyframes achievement-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-140%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes achievement-out {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-140%);
+  }
+}
+
+@keyframes achievement-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 28px 4px color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast,
+  .toast.is-hiding,
+  .toast app-game-card {
+    animation: none;
+  }
+}
