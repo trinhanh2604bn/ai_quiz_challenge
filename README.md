@@ -1,19 +1,19 @@
 # AI Knowledge Challenge
 
-A timed quiz about artificial intelligence. Answer one question at a time, keep a streak for bonus points, and save your best scores in the browser.
+A timed quiz about artificial intelligence. Pick a category and a difficulty, answer one question at a time, and save your score in the browser.
 
 ## Features
 
-- Start a quiz and move through one question at a time
-- Four answer choices per question, with automatic advance after a selection
-- 15-second countdown per question, with an automatic skip on timeout
-- Score, correct-answer count, and accuracy percentage
+- 10-question solo sessions filtered by category and difficulty
+- Four answers per question, with feedback before the next question
+- Countdown by difficulty: Easy 20 seconds, Medium 15 seconds, Hard 10 seconds
+- Automatic skip when the timer runs out
+- Score, correct-answer count, accuracy, best streak, and total time taken
 - Streak bonus: 3 correct answers in a row score 2x, and 5 in a row score 3x
-- Progress bar for quiz completion
-- Final result screen
-- Leaderboard of the top scores, stored in `localStorage`
-- Achievements for quiz completion, perfect scores, streaks, high scores, and battles, stored in `localStorage` under `ai-quiz-achievements`
-- Competitive ranking for the active season, with global, season, and category boards and Bronze through Master tiers, stored separately from the leaderboard
+- Progress through the session
+- Performance dashboard, including average response time
+- Top 10 leaderboard stored in `localStorage`
+- Optional extras already in the app: two-player battle, player profile and XP, achievements, seasonal ranking, synthesized audio, and a game launcher
 
 ## Technology stack
 
@@ -24,17 +24,15 @@ A timed quiz about artificial intelligence. Answer one question at a time, keep 
 - Angular Signals
 - Browser `localStorage`
 
-## Installation
+## Setup
 
-Requires Node.js 20 or later and npm.
+Requires Node.js 20 or later, npm, and Google Chrome for headless tests.
 
 ```bash
 npm install
 ```
 
 ## Run
-
-Start the development server:
 
 ```bash
 npm start
@@ -45,54 +43,60 @@ Open `http://localhost:4200/`.
 Production build:
 
 ```bash
-ng build
+npm run build
 ```
 
 Build output is written to `dist/`.
 
+## Tests and formatting
+
+```bash
+npm test
+npm run test:ci
+npm run format
+npm run format:check
+```
+
+`npm test` watches for changes. `npm run test:ci` runs once in Chrome headless.
+
+## Quiz rules
+
+1. Choose a category and a difficulty. The match starts only when both are selected and 10 questions exist for that pair.
+2. Answer the current question, or let the timer expire. Easy allows 20 seconds, Medium 15, and Hard 10.
+3. Correct answers score 10 points times the streak multiplier. A wrong answer or a timeout scores nothing and resets the streak.
+4. After 10 questions, the result shows score, accuracy, correct count, best streak, and total time taken, such as `01:42`.
+5. Save a name to the leaderboard. The board keeps the 10 highest scores and remains after a refresh. Invalid stored data is ignored.
+6. The performance dashboard still shows average response time. That figure is not the total quiz time.
+
+A refresh clears the in-progress quiz. Stored profile, leaderboard, ranking, achievements, and sound settings remain.
+
 ## Architecture
 
-The quiz lives under `src/app/features/quiz/`.
+Solo quiz code lives under `src/app/features/quiz/`. Profile, ranking, achievements, audio, and battle live under `src/app/features/game/`.
 
-- `components/` — screens and presentational pieces: start screen, quiz page, question card, timer, score board, progress bar, result screen, and leaderboard. Components render state and emit user actions.
-- `services/quiz.service.ts` — questions, quiz progress, scoring, streak multiplier, and result calculation.
-- `services/leaderboard.service.ts` — top scores in `localStorage` (highest score first, five entries max).
-- `models/` — `Question`, quiz state, quiz result, and leaderboard entry types.
-- `data/questions.data.ts` — the question set.
+- Components render state and emit actions.
+- `QuizService` owns questions, scoring, streak, and total time.
+- `LeaderboardService` owns the top 10 board.
+- `StorageService` is the only `localStorage` gateway.
+- `questionSeconds()` maps each difficulty to its countdown.
 
-Routes:
+Main routes:
 
-- `/` — start screen and previous best scores
-- `/achievements` — unlocked and locked achievements
+- `/` — lobby
+- `/setup` — solo category and difficulty
 - `/quiz` — the active question
-- `/result` — final score, accuracy, and save form
+- `/result` — score, accuracy, time taken, dashboard, and save form
+- `/battle/setup`, `/battle`, `/battle/result` — two-player match
+- `/profile`, `/achievements`, `/ranking` — progression screens
 
-UI state uses Angular Signals. Services are provided in the root injector. Styling uses component SCSS plus shared tokens in `src/styles.scss`.
+## Assignment workflow
 
-## Testing strategy
+Features are built one at a time: read the requirement, plan the files, implement that feature, run checks, review the result, then adjust only what the review found. Claude Code hooks format an edited file and run `npm run test:ci` when a session stops. The `assignment-reviewer` subagent reviews a finished feature without rewriting the app. Agent instructions live in `CLAUDE.md`.
 
-Check the app after each feature with `npm start`, then walk the full quiz:
+## Reflection
 
-1. Start the quiz.
-2. Answer questions and confirm the score updates.
-3. Let the 15-second timer expire once and confirm the question is skipped.
-4. Finish the quiz and review score, correct count, and accuracy.
-5. Save a name to the leaderboard.
-6. Refresh the browser and confirm the leaderboard is still there.
+TODO: Add 2–3 sentences describing:
 
-Also run `ng build` before submission and confirm the browser console has no errors.
-
-Edge cases worth repeating: timeout with no answer, the last question, an empty leaderboard, a second attempt, and a refresh during or after a quiz.
-
-## Agentic coding workflow
-
-Features were built one at a time:
-
-1. Read the requirement.
-2. Explain the approach and name the files involved.
-3. Implement that feature only.
-4. Run the app and test the flow.
-5. Review component boundaries and scoring rules.
-6. Adjust only what the review found.
-
-Business rules stay in services. Components stay focused on layout and events. Quiz logic, score rules, timer behavior, streak rules, and leaderboard storage were not mixed into later UI work.
+- what was easiest about directing Claude Code
+- what was hardest
+- what you learned about giving specific, testable instructions

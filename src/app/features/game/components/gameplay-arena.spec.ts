@@ -1,4 +1,10 @@
-import { ComponentFixture, TestBed, discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  discardPeriodicTasks,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { routes } from '../../../app.routes';
 import { Question } from '../../quiz/models/question.model';
@@ -106,8 +112,9 @@ describe('Gameplay arena UI', () => {
 
     const heard: number[] = [];
     fixture.componentInstance.answerSelected.subscribe((index) => heard.push(index));
-    const buttons: NodeListOf<HTMLButtonElement> =
-      fixture.nativeElement.querySelectorAll('button.option.answer-card');
+    const buttons: NodeListOf<HTMLButtonElement> = fixture.nativeElement.querySelectorAll(
+      'button.option.answer-card',
+    );
     expect(buttons.length).toBe(4);
     expect(fixture.nativeElement.querySelector('.badge')?.textContent).toContain('Question 1');
     expect(fixture.nativeElement.querySelector('.prompt')).not.toBeNull();
@@ -123,6 +130,7 @@ describe('Gameplay arena UI', () => {
 
   it('draws a circular timer that warns and then times out', fakeAsync(() => {
     const fixture = TestBed.createComponent(TimerComponent);
+    fixture.componentRef.setInput('durationSeconds', 15);
     fixture.detectChanges();
 
     const timer = fixture.nativeElement.querySelector('.timer') as HTMLElement;
@@ -159,6 +167,7 @@ describe('Gameplay arena UI', () => {
       expect(horizontalOverflow(host)).withContext(`solo ${width}px`).toEqual([]);
       expect(host.querySelector('app-game-hud')).not.toBeNull();
       expect(host.querySelectorAll('button.option').length).toBe(4);
+      expect(host.textContent).toContain('10s');
       fixture.destroy();
       discardPeriodicTasks();
     }
@@ -177,7 +186,9 @@ describe('Gameplay arena UI', () => {
       expect(horizontalOverflow(playingHost)).withContext(`battle ${width}px`).toEqual([]);
       expect(playingHost.querySelectorAll('app-player-panel').length).toBe(2);
       expect(playingHost.querySelector('.vs')).not.toBeNull();
-      expect(playingHost.querySelector('.turn-indicator')?.textContent).toContain(`${longName}'s turn`);
+      expect(playingHost.querySelector('.turn-indicator')?.textContent).toContain(
+        `${longName}'s turn`,
+      );
       playing.destroy();
       discardPeriodicTasks();
     }

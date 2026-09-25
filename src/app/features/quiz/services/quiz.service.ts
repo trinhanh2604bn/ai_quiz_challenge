@@ -33,6 +33,7 @@ export class QuizService {
   private readonly answerHistoryState = signal<readonly AnswerRecord[]>([]);
   private displayedQuestionId: string | null = null;
   private questionShownAt = 0;
+  private startedAt = 0;
   private transitionLocked = false;
 
   readonly quizStatus = this.status.asReadonly();
@@ -113,6 +114,7 @@ export class QuizService {
     this.answerHistoryState.set([]);
     this.displayedQuestionId = null;
     this.questionShownAt = 0;
+    this.startedAt = Date.now();
     this.transitionLocked = false;
     this.status.set('in-progress');
     return true;
@@ -210,6 +212,7 @@ export class QuizService {
   private buildResult(): QuizResult {
     const totalQuestions = this.questions().length;
     const correctCount = this.correctCountState();
+    const completedAt = Date.now();
 
     return {
       score: this.scoreState(),
@@ -217,7 +220,8 @@ export class QuizService {
       totalQuestions,
       accuracy: this.calculateAccuracy(correctCount, totalQuestions),
       maxStreak: this.maxStreakState(),
-      completedAt: Date.now(),
+      completedAt,
+      timeTakenMs: this.startedAt === 0 ? 0 : Math.max(0, completedAt - this.startedAt),
     };
   }
 

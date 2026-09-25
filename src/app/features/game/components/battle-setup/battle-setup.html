@@ -54,7 +54,12 @@
                     (input)="updatePlayerOneName($event)"
                   />
                   <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M4 16.5V20h3.5L18 9.5 14.5 6z" fill="none" stroke="currentColor" stroke-width="1.8" />
+                    <path
+                      d="M4 16.5V20h3.5L18 9.5 14.5 6z"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
                   </svg>
                 </span>
               </span>
@@ -87,7 +92,12 @@
                     (input)="updatePlayerTwoName($event)"
                   />
                   <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M4 16.5V20h3.5L18 9.5 14.5 6z" fill="none" stroke="currentColor" stroke-width="1.8" />
+                    <path
+                      d="M4 16.5V20h3.5L18 9.5 14.5 6z"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                    />
                   </svg>
                 </span>
               </span>
@@ -107,8 +117,22 @@
         <li>
           <span class="fact-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24">
-              <rect x="6" y="3" width="12" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
-              <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              <rect
+                x="6"
+                y="3"
+                width="12"
+                height="18"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <path
+                d="M9 8h6M9 12h6M9 16h4"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
             </svg>
           </span>
           <span class="fact-title">{{ sessionQuestionCount }} Questions</span>
@@ -118,11 +142,16 @@
           <span class="fact-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24">
               <circle cx="12" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="1.8" />
-              <path d="M12 13V9M12 6V4M9 4h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              <path
+                d="M12 13V9M12 6V4M9 4h6"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
             </svg>
           </span>
-          <span class="fact-title">15 Seconds Each</span>
-          <span class="fact-note">Per question</span>
+          <span class="fact-title">20 / 15 / 10</span>
+          <span class="fact-note">Easy, Medium, Hard</span>
         </li>
       </ul>
 
@@ -136,7 +165,12 @@
         <p class="hint">Ready to start {{ sessionQuestionCount }} questions.</p>
       }
 
-      <button type="button" class="cta cta-battle" [disabled]="!canStart()" (click)="createSession()">
+      <button
+        type="button"
+        class="cta cta-battle"
+        [disabled]="!canStart()"
+        (click)="createSession()"
+      >
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="m13 3-8 10h6l-1 8 8-10h-6z" fill="currentColor" />
         </svg>

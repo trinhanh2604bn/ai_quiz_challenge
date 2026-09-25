@@ -348,6 +348,8 @@ describe('Performance dashboard', () => {
     expect(dashboard.textContent).toContain('Medium');
     expect(dashboard.textContent).toContain('Hard');
     expect(dashboard.textContent).toContain('Not attempted');
+    expect(fixture.nativeElement.textContent).toContain('Time taken');
+    expect(fixture.nativeElement.textContent).toContain('00:10');
 
     const fills = Array.from(dashboard.querySelectorAll('.fill'), (element) => {
       return (element as HTMLElement).style.width;
@@ -356,7 +358,7 @@ describe('Performance dashboard', () => {
     fixture.destroy();
   });
 
-  it('still shows four answers and a 15 second timer', async () => {
+  it('still shows four answers and a 15 second timer on Medium', async () => {
     const quiz = TestBed.inject(QuizService);
     expect(quiz.startQuiz('Generative AI', 'Medium')).toBeTrue();
     const markDisplayed = spyOn(quiz, 'markQuestionDisplayed').and.callThrough();

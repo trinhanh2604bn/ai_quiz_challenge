@@ -1,8 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AchievementService } from '../../../game/achievements/services/achievement.service';
 import { ProfileService } from '../../../game/profile/services/profile.service';
 import { RankingService } from '../../../game/ranking/services/ranking.service';
+import { formatQuizDuration } from '../../models/quiz-result.model';
 import { AnalyticsService } from '../../services/analytics.service';
 import { LeaderboardService } from '../../services/leaderboard.service';
 import { QuizService } from '../../services/quiz.service';
@@ -45,6 +53,7 @@ export class ResultScreenComponent implements OnInit {
   readonly canSave = computed(
     () => this.playerName().trim().length > 0 && !this.saved() && this.result() !== null,
   );
+  readonly formatDuration = formatQuizDuration;
 
   ngOnInit(): void {
     if (!this.quiz.isCompleted()) {
@@ -84,9 +93,7 @@ export class ResultScreenComponent implements OnInit {
       score: quizResult.score,
       accuracy: quizResult.accuracy,
       completedAt: quizResult.completedAt,
-      ...(identity
-        ? { avatarId: identity.avatarId, level: identity.level }
-        : {}),
+      ...(identity ? { avatarId: identity.avatarId, level: identity.level } : {}),
     });
     this.saved.set(true);
   }

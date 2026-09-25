@@ -1,10 +1,6 @@
 <app-setup-toolbar (leave)="goBack()" />
 
-<section
-  class="setup"
-  [attr.data-game-mode]="mode() ?? 'none'"
-  [attr.data-game-state]="state()"
->
+<section class="setup" [attr.data-game-mode]="mode() ?? 'none'" [attr.data-game-state]="state()">
   <div class="stage">
     <header class="brand">
       <img class="logo" src="game/home/game-logo.png" alt="AI Knowledge Challenge" />
@@ -29,8 +25,8 @@
           </p>
           <h1>Choose Your <span class="pop">Challenge</span></h1>
           <p class="lead">
-            Pick a category and a difficulty. This match has {{ sessionQuestionCount }} questions
-            and a 15-second timer.
+            Pick a category and a difficulty. This match has {{ sessionQuestionCount }} questions.
+            Easy allows 20 seconds, Medium 15, and Hard 10.
           </p>
         </div>
 
@@ -45,8 +41,22 @@
           <li>
             <span class="fact-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
-                <rect x="6" y="3" width="12" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
-                <path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                <rect
+                  x="6"
+                  y="3"
+                  width="12"
+                  height="18"
+                  rx="2"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                />
+                <path
+                  d="M9 8h6M9 12h6M9 16h4"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
               </svg>
             </span>
             <span class="fact-title">{{ sessionQuestionCount }} Questions</span>
@@ -55,12 +65,24 @@
           <li>
             <span class="fact-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="13" r="7" fill="none" stroke="currentColor" stroke-width="1.8" />
-                <path d="M12 13V9M12 6V4M9 4h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                <circle
+                  cx="12"
+                  cy="13"
+                  r="7"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                />
+                <path
+                  d="M12 13V9M12 6V4M9 4h6"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
               </svg>
             </span>
-            <span class="fact-title">15 Seconds</span>
-            <span class="fact-note">Per question</span>
+            <span class="fact-title">20 / 15 / 10</span>
+            <span class="fact-note">Easy, Medium, Hard</span>
           </li>
           <li>
             <span class="fact-icon" aria-hidden="true">

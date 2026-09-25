@@ -44,7 +44,11 @@
     />
     <div class="clock">
       @for (question of visibleQuestions(); track question.id) {
-        <app-timer (timedOut)="onTimeout(question.id)" />
+        <app-timer
+          [durationSeconds]="secondsFor(question.difficulty)"
+          [halted]="selectedOption() !== null"
+          (timedOut)="onTimeout(question.id)"
+        />
       }
       <p class="qmark">{{ questionNumber() }} / {{ totalQuestions() }}</p>
     </div>

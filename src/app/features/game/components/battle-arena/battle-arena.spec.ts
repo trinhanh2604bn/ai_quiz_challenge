@@ -1,4 +1,10 @@
-import { ComponentFixture, TestBed, discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  discardPeriodicTasks,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { routes } from '../../../../app.routes';
 import { Question } from '../../../quiz/models/question.model';
@@ -113,7 +119,8 @@ describe('Battle arena', () => {
   it('records a timeout and switches the turn without revealing answers', fakeAsync(() => {
     const fixture = startArena(questions(2));
 
-    tick(15000);
+    expect(textOf(fixture)).toContain('20s');
+    tick(20000);
     fixture.detectChanges();
 
     const ada = TestBed.inject(BattleService).session()?.players[0];
@@ -159,7 +166,10 @@ describe('Battle arena', () => {
 
   it('shows the completed battle on the result route', () => {
     const battle = TestBed.inject(BattleService);
-    battle.createBattle([player('player-1', 'Ada'), player('player-2', 'Grace')], [question('q-1')]);
+    battle.createBattle(
+      [player('player-1', 'Ada'), player('player-2', 'Grace')],
+      [question('q-1')],
+    );
     battle.startBattle();
     battle.completeBattle('player-1');
 

@@ -3,7 +3,7 @@ import { StorageService } from '../../../core/storage/storage.service';
 import { LeaderboardEntry } from '../models/leaderboard-entry.model';
 
 const STORAGE_KEY = 'ai-quiz-leaderboard';
-const MAX_ENTRIES = 5;
+const MAX_ENTRIES = 10;
 
 @Injectable({
   providedIn: 'root',

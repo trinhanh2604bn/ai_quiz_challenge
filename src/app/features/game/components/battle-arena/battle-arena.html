@@ -32,7 +32,10 @@
       </div>
       @if (state() === 'player-turn' && !showingFeedback()) {
         <div class="clock">
-          <app-timer (timedOut)="onTimeout(question.id)" />
+          <app-timer
+            [durationSeconds]="secondsFor(question.difficulty)"
+            (timedOut)="onTimeout(question.id)"
+          />
         </div>
       }
     </div>

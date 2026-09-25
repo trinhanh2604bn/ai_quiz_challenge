@@ -1,5 +1,14 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router } from '@angular/router';
+import { questionSeconds } from '../../../quiz/models/question-seconds';
 import { Question } from '../../../quiz/models/question.model';
 import { QuestionCardComponent } from '../../../quiz/components/question-card/question-card';
 import { TimerComponent } from '../../../quiz/components/timer/timer';
@@ -22,12 +31,7 @@ const FEEDBACK_DELAY_MS = 800;
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-battle-arena',
-  imports: [
-    PlayerPanelComponent,
-    QuestionCardComponent,
-    TimerComponent,
-    BattleTransitionComponent,
-  ],
+  imports: [PlayerPanelComponent, QuestionCardComponent, TimerComponent, BattleTransitionComponent],
   templateUrl: './battle-arena.html',
   styleUrl: './battle-arena.scss',
 })
@@ -55,6 +59,7 @@ export class BattleArenaComponent implements OnInit {
   readonly multiplier = computed(() =>
     this.quiz.streakMultiplier(this.currentPlayer()?.streak ?? 0),
   );
+  readonly secondsFor = questionSeconds;
 
   constructor() {
     inject(DestroyRef).onDestroy(() => {

@@ -18,6 +18,7 @@ import { avatarById } from '../../../game/profile/data/avatars.data';
 import { levelProgress } from '../../../game/profile/data/progression.data';
 import { ProfileService } from '../../../game/profile/services/profile.service';
 import { SettingsService } from '../../../game/services/settings.service';
+import { questionSeconds } from '../../models/question-seconds';
 import { AudioService } from '../../services/audio.service';
 import { QuizService } from '../../services/quiz.service';
 import { QuestionCardComponent } from '../question-card/question-card';
@@ -28,7 +29,13 @@ const FEEDBACK_DELAY_MS = 800;
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-quiz-page',
-  imports: [GameHudComponent, QuestionCardComponent, TimerComponent, RouterLink, SettingsModalComponent],
+  imports: [
+    GameHudComponent,
+    QuestionCardComponent,
+    TimerComponent,
+    RouterLink,
+    SettingsModalComponent,
+  ],
   templateUrl: './quiz-page.html',
   styleUrl: './quiz-page.scss',
 })
@@ -74,6 +81,7 @@ export class QuizPageComponent implements OnInit {
   });
   readonly hudXpPercent = computed(() => this.hudXp()?.percent ?? null);
 
+  readonly secondsFor = questionSeconds;
   readonly selectedOption = signal<number | null>(null);
   readonly totalQuestions = this.quiz.totalQuestions;
   readonly score = this.quiz.score;
