@@ -2,6 +2,9 @@
 
 A timed quiz about artificial intelligence. Pick a category and a difficulty, answer one question at a time, and save your score in the browser.
 
+Link Deploy: https://ai-quiz-challenge-git-main-anh-ngoc-trinh.vercel.app/ 
+             https://ai-quiz-challenge-zeta.vercel.app/
+
 ## Features
 
 - 10-question solo sessions filtered by category and difficulty
